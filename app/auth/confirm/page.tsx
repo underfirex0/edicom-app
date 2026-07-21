@@ -19,26 +19,49 @@ function ConfirmInner() {
   useEffect(() => {
     const supabase = createClient();
     const next = searchParams.get("next") || "/set-password";
-    let cancelled = false;
 
-    async function check(attempt: number) {
-      const { data } = await supabase.auth.getSession();
-      if (cancelled) return;
-      if (data.session) {
+    async function run() {
+      const rawHash = window.location.hash.startsWith("#")
+        ? window.location.hash.slice(1)
+        : window.location.hash;
+      const hashParams = new URLSearchParams(rawHash);
+
+      const hashError = hashParams.get("error_description") || hashParams.get("error");
+      if (hashError) {
+        setError(decodeURIComponent(hashError.replace(/\+/g, " ")));
+        return;
+      }
+
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) {
+          setError("Impossible d'établir votre session. Merci de demander un nouveau lien au recruteur.");
+          return;
+        }
         router.replace(next);
         return;
       }
-      if (attempt < 5) {
-        setTimeout(() => check(attempt + 1), 400);
-      } else {
-        setError("Votre lien d'invitation a expiré ou est invalide. Merci de demander un nouveau lien au recruteur.");
+
+      const code = searchParams.get("code");
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          setError("Impossible d'établir votre session. Merci de demander un nouveau lien au recruteur.");
+          return;
+        }
+        router.replace(next);
+        return;
       }
+
+      setError("Votre lien d'invitation a expiré ou est invalide. Merci de demander un nouveau lien au recruteur.");
     }
 
-    check(0);
-    return () => {
-      cancelled = true;
-    };
+    run();
   }, [router, searchParams]);
 
   return (
