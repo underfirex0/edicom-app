@@ -143,6 +143,24 @@ seuils de recommandation — les changements s'appliquent aux tests soumis aprè
 
 ---
 
+## 6. Nouveau : page Entretiens (planification RH)
+
+Si votre projet Supabase existait déjà, exécutez aussi `supabase/migration-add-interviews.sql`
+dans le SQL Editor (une seule fois).
+
+La page **Entretiens** (`/admin/interviews`) est l'espace dédié pour gérer tout le cycle
+d'entretien après le test :
+- **À planifier** : tous les candidats testés qui n'ont pas encore d'entretien programmé —
+  un bouton « Planifier » ouvre un mini-formulaire (date/heure, lieu, reçu par).
+- **Entretiens à venir** : liste triée par date. Pour chaque entretien : reporter la date,
+  marquer le candidat absent, annuler, ou **marquer comme terminé** — ce qui ouvre le choix de
+  décision (Recruter / Revoir en 2e entretien / Ne pas retenir) avec une note libre. Cette
+  décision met aussi automatiquement à jour le statut du candidat partout ailleurs dans l'app.
+- **Historique** : tous les entretiens passés, annulés ou avec absence, avec leur décision.
+
+Un candidat marqué « à revoir » repasse automatiquement dans la colonne « à planifier » pour
+programmer un second entretien.
+
 ## 7. Nouveau : dashboard analytics, mises à jour en direct, questions IA
 
 Si votre projet Supabase existait déjà avant cette mise à jour, ouvrez **SQL Editor** dans

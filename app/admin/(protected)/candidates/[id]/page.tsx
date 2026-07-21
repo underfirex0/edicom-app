@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCandidateById, getNotesForCandidate } from "@/lib/admin-data";
+import { getCandidateById, getNotesForCandidate, getInterviewsForCandidate } from "@/lib/admin-data";
 import { FOLLOWUP_QUESTIONS, ITEM_FOLLOWUPS, BEHAVIORAL_ITEMS, SJT_SCENARIOS } from "@/lib/scoring";
 import { Card, RecoBadge, StatusPill, BackLink, recoMeta } from "@/components/ui";
 import { SignalMeter, pctToBars } from "@/components/SignalMeter";
@@ -14,6 +15,7 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
   if (!candidate) notFound();
 
   const notes = await getNotesForCandidate(candidate.id);
+  const interviews = await getInterviewsForCandidate(candidate.id);
   const r = candidate.result;
 
   const suggestedQuestions: string[] = [];
@@ -148,6 +150,52 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
             </p>
           )}
         </>
+      )}
+
+      <SectionTitle>Entretiens</SectionTitle>
+      {interviews.length === 0 ? (
+        <Card className="p-5 mb-8 flex items-center justify-between">
+          <p className="text-[13.5px] text-muted">Aucun entretien planifié pour ce candidat.</p>
+          <Link href="/admin/interviews" className="focus-ring font-mono text-[12px] text-teal shrink-0">
+            Planifier →
+          </Link>
+        </Card>
+      ) : (
+        <Card className="p-5 mb-8 divide-y divide-line">
+          {interviews.map((iv) => {
+            const outcomeMeta =
+              iv.outcome === "hire"
+                ? { label: "Recruté(e)", color: "#2F6F63" }
+                : iv.outcome === "second_round"
+                ? { label: "À revoir", color: "#CE9A45" }
+                : iv.outcome === "reject"
+                ? { label: "Non retenu(e)", color: "#C1584F" }
+                : iv.status === "no_show"
+                ? { label: "Absent(e)", color: "#C1584F" }
+                : iv.status === "cancelled"
+                ? { label: "Annulé", color: "#847E71" }
+                : { label: "Planifié", color: "#BD8A4F" };
+            return (
+              <div key={iv.id} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-[13.5px]">
+                    {new Date(iv.scheduledAt).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" })}
+                    {iv.location ? ` · ${iv.location}` : ""}
+                  </div>
+                  {iv.outcomeNotes && <p className="text-[12.5px] text-muted mt-1">{iv.outcomeNotes}</p>}
+                </div>
+                <span className="shrink-0 text-[12px] font-medium" style={{ color: outcomeMeta.color }}>
+                  {outcomeMeta.label}
+                </span>
+              </div>
+            );
+          })}
+          <div className="pt-3">
+            <Link href="/admin/interviews" className="focus-ring font-mono text-[12px] text-teal">
+              Gérer les entretiens →
+            </Link>
+          </div>
+        </Card>
       )}
 
       <SectionTitle>Notes internes</SectionTitle>

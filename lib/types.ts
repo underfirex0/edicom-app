@@ -1,5 +1,8 @@
 export type Recommendation = "good" | "watch" | "risk";
 
+export type InterviewStatus = "scheduled" | "completed" | "no_show" | "cancelled";
+export type InterviewOutcome = "hire" | "second_round" | "reject";
+
 export type CandidateStatus =
   | "invited"
   | "in_progress"

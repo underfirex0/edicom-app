@@ -186,3 +186,81 @@ export async function getNotesForCandidate(candidateId: string): Promise<NoteRec
     authorName: adminMap.get(n.admin_id) ?? "Administrateur",
   }));
 }
+
+import type { InterviewStatus, InterviewOutcome } from "@/lib/types";
+
+export interface InterviewRecord {
+  id: string;
+  candidateId: string;
+  candidateName: string;
+  candidateEmail: string;
+  candidateScore: number | null;
+  candidateRecommendation: Recommendation | null;
+  scheduledAt: string;
+  location: string | null;
+  interviewer: string | null;
+  status: InterviewStatus;
+  outcome: InterviewOutcome | null;
+  outcomeNotes: string | null;
+  createdAt: string;
+}
+
+export interface InterviewsBoard {
+  toSchedule: CandidateRecord[];
+  upcoming: InterviewRecord[];
+  history: InterviewRecord[];
+}
+
+export async function getInterviewsBoard(): Promise<InterviewsBoard> {
+  const admin = createAdminClient();
+  const [allCandidates, { data: interviewRows }] = await Promise.all([
+    getAllCandidates(),
+    admin.from("interviews").select("*").order("scheduled_at", { ascending: true }),
+  ]);
+
+  const candidateMap = new Map(allCandidates.map((c) => [c.id, c]));
+
+  const records: InterviewRecord[] = (interviewRows ?? []).map((row) => {
+    const c = candidateMap.get(row.candidate_id);
+    return {
+      id: row.id,
+      candidateId: row.candidate_id,
+      candidateName: c?.fullName ?? "—",
+      candidateEmail: c?.email ?? "",
+      candidateScore: c?.result?.globalScore ?? null,
+      candidateRecommendation: c?.result?.recommendation ?? null,
+      scheduledAt: row.scheduled_at,
+      location: row.location,
+      interviewer: row.interviewer,
+      status: row.status as InterviewStatus,
+      outcome: row.outcome as InterviewOutcome | null,
+      outcomeNotes: row.outcome_notes,
+      createdAt: row.created_at,
+    };
+  });
+
+  const activeCandidateIds = new Set(
+    records.filter((r) => r.status === "scheduled").map((r) => r.candidateId)
+  );
+
+  const toSchedule = allCandidates.filter(
+    (c) => c.result && !activeCandidateIds.has(c.id) && c.status !== "hired" && c.status !== "rejected"
+  );
+
+  const upcoming = records
+    .filter((r) => r.status === "scheduled")
+    .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+
+  const history = records
+    .filter((r) => r.status !== "scheduled")
+    .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
+
+  return { toSchedule, upcoming, history };
+}
+
+export async function getInterviewsForCandidate(candidateId: string): Promise<InterviewRecord[]> {
+  const board = await getInterviewsBoard();
+  return [...board.upcoming, ...board.history]
+    .filter((r) => r.candidateId === candidateId)
+    .sort((a, b) => new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime());
+}

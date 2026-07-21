@@ -7,6 +7,7 @@ import { logoutAction } from "@/app/admin/actions";
 const NAV = [
   { href: "/admin", label: "Tableau de bord" },
   { href: "/admin/candidates", label: "Candidats" },
+  { href: "/admin/interviews", label: "Entretiens" },
   { href: "/admin/invite", label: "Inviter" },
   { href: "/admin/settings", label: "Réglages" },
 ];

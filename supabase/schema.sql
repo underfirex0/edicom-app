@@ -59,6 +59,21 @@ create table if not exists scoring_config (
 );
 insert into scoring_config (id) values (1) on conflict (id) do nothing;
 
+create table if not exists interviews (
+  id uuid primary key default gen_random_uuid(),
+  candidate_id uuid not null references candidates(id) on delete cascade,
+  scheduled_at timestamptz not null,
+  location text,
+  interviewer text,
+  status text not null default 'scheduled'
+    check (status in ('scheduled','completed','no_show','cancelled')),
+  outcome text check (outcome in ('hire','second_round','reject')),
+  outcome_notes text,
+  created_by uuid references profiles(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 -- ---------- Row Level Security ----------
 -- All privileged writes (invite, scoring, notes, status changes) happen
 -- server-side through the service-role key after the app verifies the
@@ -71,6 +86,7 @@ alter table candidates enable row level security;
 alter table test_results enable row level security;
 alter table candidate_notes enable row level security;
 alter table scoring_config enable row level security;
+alter table interviews enable row level security;
 
 create policy "read own profile" on profiles
   for select using (id = auth.uid());
@@ -88,3 +104,5 @@ create policy "read own test result" on test_results
 create index if not exists idx_candidates_status on candidates(status);
 create index if not exists idx_test_results_candidate on test_results(candidate_id);
 create index if not exists idx_notes_candidate on candidate_notes(candidate_id);
+create index if not exists idx_interviews_candidate on interviews(candidate_id);
+create index if not exists idx_interviews_status on interviews(status);
