@@ -244,8 +244,11 @@ export async function getInterviewsBoard(): Promise<InterviewsBoard> {
   );
 
   const toSchedule = allCandidates.filter(
-    (c) => c.result && !activeCandidateIds.has(c.id) && c.status !== "hired" && c.status !== "rejected"
+    (c) => !activeCandidateIds.has(c.id) && c.status !== "hired" && c.status !== "rejected"
   );
+
+  const statusPriority: Record<string, number> = { completed: 0, in_progress: 1, invited: 2, interviewed: 3 };
+  toSchedule.sort((a, b) => (statusPriority[a.status] ?? 9) - (statusPriority[b.status] ?? 9));
 
   const upcoming = records
     .filter((r) => r.status === "scheduled")

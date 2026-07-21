@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { scheduleInterviewAction, type FormState } from "./actions";
-import { RecoBadge } from "@/components/ui";
+import { RecoBadge, StatusPill } from "@/components/ui";
 import type { Recommendation } from "@/lib/types";
 
 function SubmitButton() {
@@ -22,13 +22,15 @@ function SubmitButton() {
 export default function ScheduleRow({
   candidateId,
   fullName,
+  status,
   score,
   recommendation,
 }: {
   candidateId: string;
   fullName: string;
-  score: number;
-  recommendation: Recommendation;
+  status: string;
+  score: number | null;
+  recommendation: Recommendation | null;
 }) {
   const [open, setOpen] = useState(false);
   const [state, formAction] = useFormState<FormState, FormData>(scheduleInterviewAction, null);
@@ -38,9 +40,13 @@ export default function ScheduleRow({
       <div className="flex items-center gap-4">
         <div className="flex-1 min-w-0">
           <div className="text-[14.5px] font-medium truncate">{fullName}</div>
-          <div className="text-[12px] text-muted font-mono mt-0.5">score {score}/100</div>
+          {score !== null ? (
+            <div className="text-[12px] text-muted font-mono mt-0.5">score {score}/100</div>
+          ) : (
+            <div className="text-[12px] text-muted mt-0.5">Test pas encore complété</div>
+          )}
         </div>
-        <RecoBadge reco={recommendation} />
+        {recommendation ? <RecoBadge reco={recommendation} /> : <StatusPill status={status} />}
         {!state?.success && (
           <button
             onClick={() => setOpen((v) => !v)}
@@ -51,9 +57,7 @@ export default function ScheduleRow({
         )}
       </div>
 
-      {state?.success && (
-        <p className="text-[12.5px] text-teal mt-3">{state.success}</p>
-      )}
+      {state?.success && <p className="text-[12.5px] text-teal mt-3">{state.success}</p>}
 
       {open && !state?.success && (
         <form action={formAction} className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">

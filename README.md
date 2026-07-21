@@ -149,9 +149,13 @@ Si votre projet Supabase existait déjà, exécutez aussi `supabase/migration-ad
 dans le SQL Editor (une seule fois).
 
 La page **Entretiens** (`/admin/interviews`) est l'espace dédié pour gérer tout le cycle
-d'entretien après le test :
-- **À planifier** : tous les candidats testés qui n'ont pas encore d'entretien programmé —
-  un bouton « Planifier » ouvre un mini-formulaire (date/heure, lieu, reçu par).
+d'entretien, du premier contact jusqu'à la décision finale :
+- **Ajouter un candidat** : pour une personne qui vient directement à un rendez-vous sans être
+  passée par le test en ligne au préalable (elle pourra le passer sur place, en salle d'attente,
+  avant l'entretien). Un compte est créé et vous pouvez planifier son rendez-vous dans la foulée.
+- **À planifier** : tous les candidats sans entretien programmé — qu'ils aient déjà complété le
+  test ou non (le statut de leur test est affiché sur chaque ligne). Un bouton « Planifier »
+  ouvre un mini-formulaire (date/heure, lieu, reçu par).
 - **Entretiens à venir** : liste triée par date. Pour chaque entretien : reporter la date,
   marquer le candidat absent, annuler, ou **marquer comme terminé** — ce qui ouvre le choix de
   décision (Recruter / Revoir en 2e entretien / Ne pas retenir) avec une note libre. Cette

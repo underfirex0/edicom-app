@@ -1,5 +1,6 @@
 import { getInterviewsBoard } from "@/lib/admin-data";
 import { Card } from "@/components/ui";
+import AddCandidateForm from "./AddCandidateForm";
 import ScheduleRow from "./ScheduleRow";
 import InterviewCard from "./InterviewCard";
 
@@ -27,6 +28,8 @@ export default async function InterviewsPage() {
         </p>
       </div>
 
+      <AddCandidateForm />
+
       <SectionHeader title="À planifier" count={board.toSchedule.length} />
       {board.toSchedule.length === 0 ? (
         <Card className="p-8 text-center text-[14px] text-muted mb-10">
@@ -39,8 +42,9 @@ export default async function InterviewsPage() {
               key={c.id}
               candidateId={c.id}
               fullName={c.fullName}
-              score={c.result!.globalScore}
-              recommendation={c.result!.recommendation}
+              status={c.status}
+              score={c.result?.globalScore ?? null}
+              recommendation={c.result?.recommendation ?? null}
             />
           ))}
         </Card>
