@@ -53,7 +53,7 @@ export async function resendInviteAction(_prev: FormState, formData: FormData): 
   const { data, error } = await admin.auth.admin.generateLink({
     type: "recovery",
     email,
-    options: { redirectTo: `${siteUrl}/auth/callback?next=/set-password` },
+    options: { redirectTo: `${siteUrl}/auth/confirm?next=/set-password` },
   });
   if (error || !data) return { error: error?.message ?? "Impossible de générer un nouveau lien." };
 

@@ -46,9 +46,12 @@ les bonnes réponses dans le code source ou l'onglet réseau.
 1. Toujours dans Supabase : **Authentication → URL Configuration**.
 2. **Site URL** : mettez votre URL de production (vous l'aurez après l'étape 4 — vous pourrez
    revenir la modifier). En attendant, mettez `http://localhost:3000`.
-3. **Redirect URLs** : ajoutez :
-   - `http://localhost:3000/auth/callback`
-   - `https://VOTRE-DOMAINE-VERCEL.vercel.app/auth/callback` (à ajouter après le déploiement)
+3. **Redirect URLs** : ajoutez (les deux, en local ET en production) :
+   - `http://localhost:3000/auth/confirm`
+   - `https://VOTRE-DOMAINE-VERCEL.vercel.app/auth/confirm`
+
+   ⚠️ C'est bien `/auth/confirm` qu'il faut whitelister ici (pas `/auth/callback`) — c'est la
+   page qui reçoit les liens d'invitation/réinitialisation générés par Supabase.
 
 ### Au sujet des emails d'invitation
 
@@ -104,7 +107,7 @@ git push -u origin main
    avec cette vraie URL, puis **Deployments → ⋯ → Redeploy** pour appliquer le changement.
 6. Retournez dans **Supabase → Authentication → URL Configuration** et mettez à jour :
    - **Site URL** → votre URL Vercel
-   - **Redirect URLs** → ajoutez `https://VOTRE-URL.vercel.app/auth/callback`
+   - **Redirect URLs** → ajoutez `https://VOTRE-URL.vercel.app/auth/confirm`
 
 ---
 

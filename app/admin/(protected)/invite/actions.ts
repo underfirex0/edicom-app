@@ -27,7 +27,7 @@ export async function inviteCandidateAction(_prev: FormState, formData: FormData
     type: "invite",
     email,
     options: {
-      redirectTo: `${siteUrl}/auth/callback?next=/set-password`,
+      redirectTo: `${siteUrl}/auth/confirm?next=/set-password`,
       data: { full_name: fullName },
     },
   });
