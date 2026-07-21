@@ -17,7 +17,7 @@ create table if not exists profiles (
 
 create table if not exists candidates (
   id uuid primary key references profiles(id) on delete cascade,
-  position text not null default 'Commercial(e) B2B',
+  position text not null default 'Commercial(e) Terrain B2B',
   status text not null default 'invited'
     check (status in ('invited','in_progress','completed','interviewed','hired','rejected')),
   invited_by uuid references profiles(id) on delete set null,

@@ -47,12 +47,15 @@ export async function resendInviteAction(_prev: FormState, formData: FormData): 
   const admin = createAdminClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+  // The candidate's account already exists at this point, so we use a
+  // "recovery" link (not "invite" — that type only works for brand-new
+  // emails) to give them a fresh way to set their password and sign in.
   const { data, error } = await admin.auth.admin.generateLink({
-    type: "invite",
+    type: "recovery",
     email,
     options: { redirectTo: `${siteUrl}/auth/callback?next=/set-password` },
   });
-  if (error || !data) return { error: "Impossible de générer un nouveau lien." };
+  if (error || !data) return { error: error?.message ?? "Impossible de générer un nouveau lien." };
 
   return { success: "Nouveau lien généré.", link: data.properties.action_link };
 }

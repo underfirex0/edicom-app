@@ -39,7 +39,7 @@ export default function InviteForm() {
           <TextInput type="email" name="email" placeholder="candidat@exemple.com" required />
         </Field>
         <Field label="Poste">
-          <TextInput name="position" defaultValue="Commercial(e) B2B" />
+          <TextInput name="position" defaultValue="Commercial(e) Terrain B2B" />
         </Field>
         {state?.error && <p className="text-[13px] text-coral bg-coral-soft rounded-xl px-3.5 py-2.5">{state.error}</p>}
         {state?.success && <p className="text-[13px] text-teal bg-teal-soft rounded-xl px-3.5 py-2.5">{state.success}</p>}
