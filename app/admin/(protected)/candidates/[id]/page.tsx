@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 import { getCandidateById, getNotesForCandidate } from "@/lib/admin-data";
-import { FOLLOWUP_QUESTIONS, SJT_SCENARIOS } from "@/lib/scoring";
+import { FOLLOWUP_QUESTIONS, ITEM_FOLLOWUPS, BEHAVIORAL_ITEMS, SJT_SCENARIOS } from "@/lib/scoring";
 import { Card, RecoBadge, StatusPill, BackLink, recoMeta } from "@/components/ui";
 import { SignalMeter, pctToBars } from "@/components/SignalMeter";
 import StatusControl from "./StatusControl";
 import NoteForm from "./NoteForm";
 import ResendInvite from "./ResendInvite";
 import DeleteButton from "./DeleteButton";
+import AiBriefPanel from "./AiBriefPanel";
 
 export default async function CandidateDetailPage({ params }: { params: { id: string } }) {
   const candidate = await getCandidateById(params.id);
@@ -17,12 +18,33 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
 
   const suggestedQuestions: string[] = [];
   if (r) {
-    r.dims.filter((d) => d.pct < 50).forEach((d) => suggestedQuestions.push(FOLLOWUP_QUESTIONS[d.key]));
+    r.dims
+      .filter((d) => d.pct < 50)
+      .forEach((d) => {
+        const itemsInDim = BEHAVIORAL_ITEMS.filter((it) => it.dimKey === d.key);
+        const weakItemIds = itemsInDim
+          .filter((it) => {
+            const ans = r.behavioralAnswers.find((a) => a.id === it.id);
+            if (!ans) return false;
+            const adjusted = it.reverse ? 6 - ans.val : ans.val;
+            return adjusted <= 2;
+          })
+          .map((it) => it.id);
+
+        if (weakItemIds.length) {
+          weakItemIds.forEach((id) => suggestedQuestions.push(ITEM_FOLLOWUPS[id]));
+        } else {
+          suggestedQuestions.push(FOLLOWUP_QUESTIONS[d.key]);
+        }
+      });
+
     r.sjtAnswers.forEach((a) => {
       const scenario = SJT_SCENARIOS.find((s) => s.id === a.id);
       const opt = scenario?.options.find((o) => o.id === a.optionId);
       if (scenario && opt && opt.score <= 1) {
-        suggestedQuestions.push(`Revenir sur « ${scenario.theme} » — la réponse choisie était perfectible.`);
+        suggestedQuestions.push(
+          `« ${scenario.theme} » — ${opt.note ?? "la réponse choisie était perfectible."}`
+        );
       }
     });
   }
@@ -109,7 +131,9 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
             })}
           </Card>
 
-          <SectionTitle>Questions suggérées pour l&apos;entretien</SectionTitle>
+          <AiBriefPanel candidateId={candidate.id} existing={r.aiBrief} />
+
+          <SectionTitle>Points à explorer en entretien (générés automatiquement)</SectionTitle>
           {suggestedQuestions.length ? (
             <ul className="space-y-2 mb-8">
               {suggestedQuestions.map((q, i) => (

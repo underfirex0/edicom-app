@@ -37,6 +37,7 @@ create table if not exists test_results (
   sjt_total int not null,
   global_score int not null,
   recommendation text not null check (recommendation in ('good','watch','risk')),
+  ai_brief jsonb,
   submitted_at timestamptz not null default now()
 );
 

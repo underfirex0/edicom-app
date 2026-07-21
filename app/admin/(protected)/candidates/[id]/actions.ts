@@ -2,9 +2,12 @@
 
 import { requireAdmin } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCandidateById } from "@/lib/admin-data";
+import { generateAiBrief, type AiBriefResult } from "@/lib/ai-brief";
 import { revalidatePath } from "next/cache";
 
 export type FormState = { error?: string; success?: string; link?: string } | null;
+export type AiBriefState = { error?: string; brief?: AiBriefResult } | null;
 
 export async function updateStatusAction(candidateId: string, status: string) {
   await requireAdmin();
@@ -58,4 +61,28 @@ export async function resendInviteAction(_prev: FormState, formData: FormData): 
   if (error || !data) return { error: error?.message ?? "Impossible de générer un nouveau lien." };
 
   return { success: "Nouveau lien généré.", link: data.properties.action_link };
+}
+
+export async function generateAiBriefAction(candidateId: string): Promise<AiBriefState> {
+  await requireAdmin();
+
+  const candidate = await getCandidateById(candidateId);
+  if (!candidate || !candidate.result) {
+    return { error: "Ce candidat n'a pas encore de résultat de test." };
+  }
+
+  const result = await generateAiBrief(candidate);
+  if (!result.ok) {
+    return { error: result.error };
+  }
+
+  const admin = createAdminClient();
+  await admin
+    .from("test_results")
+    .update({ ai_brief: { ...result.brief, generatedAt: new Date().toISOString() } })
+    .eq("candidate_id", candidateId);
+
+  revalidatePath(`/admin/candidates/${candidateId}`);
+
+  return { brief: result.brief };
 }

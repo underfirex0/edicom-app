@@ -22,5 +22,6 @@ export interface ResultsSummary {
   globalScore: number;
   recommendation: Recommendation;
   weakDims: string[];
-  weakScenarios: { theme: string; text: string; score: number }[];
+  weakItems: string[];
+  weakScenarios: { theme: string; text: string; score: number; note?: string }[];
 }

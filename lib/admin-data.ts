@@ -2,6 +2,12 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { CandidateStatus, Recommendation, DimensionScore } from "@/lib/types";
 
+export interface AiBrief {
+  synthesis: string;
+  questions: string[];
+  generatedAt: string;
+}
+
 export interface CandidateRecord {
   id: string;
   fullName: string;
@@ -21,6 +27,7 @@ export interface CandidateRecord {
     behavioralAnswers: { id: string; val: number }[];
     sjtAnswers: { id: string; optionId: string }[];
     submittedAt: string;
+    aiBrief: AiBrief | null;
   } | null;
 }
 
@@ -59,11 +66,91 @@ export async function getAllCandidates(): Promise<CandidateRecord[]> {
               behavioralAnswers: r.behavioral_answers,
               sjtAnswers: r.sjt_answers,
               submittedAt: r.submitted_at,
+              aiBrief: (r.ai_brief as AiBrief | null) ?? null,
             }
           : null,
       };
     })
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+}
+
+export interface Analytics {
+  totalCandidates: number;
+  statusCounts: Record<CandidateStatus, number>;
+  recommendationCounts: Record<Recommendation, number>;
+  completedCount: number;
+  conversionRate: number; // completed / (total - invited-not-started is excluded)
+  avgGlobalScore: number;
+  avgDimensions: { key: string; label: string; avgPct: number }[];
+  scoreDistribution: { label: string; count: number }[];
+  topCandidates: CandidateRecord[];
+}
+
+const STATUS_KEYS: CandidateStatus[] = [
+  "invited",
+  "in_progress",
+  "completed",
+  "interviewed",
+  "hired",
+  "rejected",
+];
+
+export async function getAnalytics(): Promise<Analytics> {
+  const all = await getAllCandidates();
+  const completed = all.filter((c) => c.result);
+
+  const statusCounts = STATUS_KEYS.reduce((acc, s) => {
+    acc[s] = all.filter((c) => c.status === s).length;
+    return acc;
+  }, {} as Record<CandidateStatus, number>);
+
+  const recommendationCounts: Record<Recommendation, number> = { good: 0, watch: 0, risk: 0 };
+  completed.forEach((c) => {
+    recommendationCounts[c.result!.recommendation] += 1;
+  });
+
+  const avgGlobalScore = completed.length
+    ? Math.round(completed.reduce((sum, c) => sum + c.result!.globalScore, 0) / completed.length)
+    : 0;
+
+  const dimKeys = completed[0]?.result?.dims.map((d) => d.key) ?? [];
+  const avgDimensions = dimKeys.map((key) => {
+    const scores = completed.map((c) => c.result!.dims.find((d) => d.key === key)?.pct ?? 0);
+    const label = completed[0]!.result!.dims.find((d) => d.key === key)!.label;
+    return { key, label, avgPct: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) };
+  });
+
+  const bands = [
+    { label: "0–39", min: 0, max: 39 },
+    { label: "40–54", min: 40, max: 54 },
+    { label: "55–64", min: 55, max: 64 },
+    { label: "65–74", min: 65, max: 74 },
+    { label: "75–84", min: 75, max: 84 },
+    { label: "85–100", min: 85, max: 100 },
+  ];
+  const scoreDistribution = bands.map((b) => ({
+    label: b.label,
+    count: completed.filter((c) => c.result!.globalScore >= b.min && c.result!.globalScore <= b.max).length,
+  }));
+
+  const topCandidates = [...completed]
+    .sort((a, b) => b.result!.globalScore - a.result!.globalScore)
+    .slice(0, 5);
+
+  const invitedTotal = all.length;
+  const conversionRate = invitedTotal ? Math.round((completed.length / invitedTotal) * 100) : 0;
+
+  return {
+    totalCandidates: all.length,
+    statusCounts,
+    recommendationCounts,
+    completedCount: completed.length,
+    conversionRate,
+    avgGlobalScore,
+    avgDimensions,
+    scoreDistribution,
+    topCandidates,
+  };
 }
 
 export async function getCandidateById(id: string): Promise<CandidateRecord | null> {

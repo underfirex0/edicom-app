@@ -143,7 +143,33 @@ seuils de recommandation — les changements s'appliquent aux tests soumis aprè
 
 ---
 
-## 6. Développement local (optionnel)
+## 7. Nouveau : dashboard analytics, mises à jour en direct, questions IA
+
+Si votre projet Supabase existait déjà avant cette mise à jour, ouvrez **SQL Editor** dans
+Supabase et exécutez le contenu de `supabase/migration-add-ai-brief.sql` (une seule fois).
+
+**Dashboard analytics** (`/admin`) : répartition du pipeline par statut, recommandations
+(recommandé/à creuser/à risque), score moyen par compétence sur l'ensemble des candidats,
+distribution des scores, meilleurs profils. Tout se met à jour automatiquement toutes les
+quelques secondes (indicateur "EN DIRECT" en haut à droite) — pas besoin de rafraîchir la page.
+
+**Questions d'entretien plus précises** : chaque point faible détecté renvoie maintenant à
+l'affirmation exacte à laquelle le candidat a répondu, pas juste à la compétence générale.
+
+**Questions personnalisées par IA (optionnel)** : sur la fiche de chaque candidat, un bouton
+« Générer avec l'IA » envoie les réponses exactes du candidat à l'API Anthropic (Claude) et
+renvoie une courte synthèse + 5 questions d'entretien sur mesure, construites à partir de ce
+que ce candidat précis a répondu. Pour l'activer :
+1. Créez une clé sur [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+2. Ajoutez `ANTHROPIC_API_KEY` dans les variables d'environnement Vercel (Settings → Environment
+   Variables), puis redéployez.
+3. Sans cette clé, le reste de l'application fonctionne normalement — le bouton affiche
+   simplement un message expliquant comment l'activer.
+
+Cette fonctionnalité utilise votre propre clé API Anthropic et engendre donc un coût minime par
+génération (quelques centimes), facturé sur votre compte Anthropic — pas sur Claude.ai.
+
+## 8. Développement local (optionnel)
 
 ```bash
 npm install

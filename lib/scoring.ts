@@ -17,6 +17,7 @@ export interface SjtOption {
   id: string;
   text: string;
   score: number; // 0-3
+  note?: string; // shown to the recruiter when this option is chosen and scores low
 }
 
 export interface SjtScenario {
@@ -32,6 +33,24 @@ export const DIMENSION_LABELS: Record<string, string> = {
   REL: "Présence & aisance en face à face",
   ORG: "Organisation de tournée & autonomie",
   PRE: "Résistance à la pression du terrain",
+};
+
+export const ITEM_FOLLOWUPS: Record<string, string> = {
+  "per-1": "Racontez une fois où vous êtes tombé(e) sur porte close ou décideur absent. Qu'avez-vous fait sur le moment ?",
+  "per-2": "Comment récupérez-vous votre énergie après une série de visites qui n'aboutissent à rien dans la même journée ?",
+  "per-3": "Un rendez-vous s'annule au dernier moment dans votre tournée — concrètement, que faites-vous du temps libéré ?",
+  "res-1": "Qu'est-ce qui vous motive le plus : la stabilité du fixe ou le potentiel du variable ? Donnez-moi un exemple concret.",
+  "res-2": "Décrivez le système de rémunération qui vous conviendrait idéalement, et pourquoi.",
+  "res-3": "Racontez la dernière fois où vous avez atteint un objectif chiffré important pour vous.",
+  "rel-1": "Mettez-vous à ma place à l'accueil d'une entreprise inconnue : comment vous présentez-vous en 30 secondes ?",
+  "rel-2": "Préférez-vous négocier par écrit, par téléphone ou en face à face ? Pourquoi ?",
+  "rel-3": "Comment adaptez-vous votre discours entre un gérant pressé et un(e) standardiste ?",
+  "org-1": "Décrivez comment vous préparez concrètement votre tournée de la semaine prochaine.",
+  "org-2": "Racontez une fois où vous êtes parti(e) en visite mal préparé(e). Qu'est-ce qui s'est passé ?",
+  "org-3": "Comment suivez-vous vos prospects et vos relances au quotidien (outil, méthode) ?",
+  "pre-1": "Décrivez votre plus grosse journée de tournée en nombre de rendez-vous. Comment l'avez-vous vécue ?",
+  "pre-2": "Racontez un refus en face à face qui vous a marqué. Comment avez-vous réagi sur le moment ?",
+  "pre-3": "Après une journée terrain difficile, comment abordez-vous le rendez-vous suivant ?",
 };
 
 export const FOLLOWUP_QUESTIONS: Record<string, string> = {
@@ -66,10 +85,10 @@ export const SJT_SCENARIOS: SjtScenario[] = [
     theme: "Rendez-vous manqué sur le terrain",
     text: "Vous arrivez à un rendez-vous programmé chez un prospect, mais le décideur est absent (parti en réunion imprévue).",
     options: [
-      { id: "a", text: "Vous repartez et retentez de le joindre un autre jour par téléphone.", score: 1 },
-      { id: "b", text: "Vous attendez plusieurs heures sur place jusqu'à son retour, quitte à annuler vos autres rendez-vous du jour.", score: 0 },
+      { id: "a", text: "Vous repartez et retentez de le joindre un autre jour par téléphone.", score: 1, note: "A choisi une option passive : abandonne l'occasion d'avancer sur place plutôt que de rebondir immédiatement." },
+      { id: "b", text: "Vous attendez plusieurs heures sur place jusqu'à son retour, quitte à annuler vos autres rendez-vous du jour.", score: 0, note: "A sacrifié le reste de sa tournée pour un seul rendez-vous incertain — signal de mauvaise gestion du temps terrain." },
       { id: "c", text: "Vous échangez avec un autre interlocuteur disponible sur place, reprogrammez un nouveau rendez-vous avec le décideur, et poursuivez votre tournée.", score: 3 },
-      { id: "d", text: "Vous laissez votre carte de visite à l'accueil et partez sans chercher à en savoir plus.", score: 1 },
+      { id: "d", text: "Vous laissez votre carte de visite à l'accueil et partez sans chercher à en savoir plus.", score: 1, note: "Option passive : n'essaie pas de tirer parti de sa présence sur place ni de sécuriser un prochain contact concret." },
     ],
   },
   {
@@ -77,10 +96,10 @@ export const SJT_SCENARIOS: SjtScenario[] = [
     theme: "Franchissement de l'accueil en visite spontanée",
     text: "Vous vous présentez à la réception d'une entreprise pour une prospection physique sans rendez-vous. La personne à l'accueil refuse de vous laisser rencontrer le décideur.",
     options: [
-      { id: "a", text: "Vous insistez fermement pour voir le décideur immédiatement.", score: 1 },
+      { id: "a", text: "Vous insistez fermement pour voir le décideur immédiatement.", score: 1, note: "Approche en force face à un barrage — risque d'abîmer la relation avec l'accueil, souvent un allié utile à long terme." },
       { id: "b", text: "Vous vous présentez brièvement, expliquez l'objet de votre visite avec courtoisie, laissez une plaquette, et demandez le meilleur moment pour être reçu.", score: 3 },
-      { id: "c", text: "Vous repartez sans rien laisser ni chercher à comprendre.", score: 0 },
-      { id: "d", text: "Vous demandez à l'accueil les coordonnées personnelles du décideur pour le contacter autrement.", score: 1 },
+      { id: "c", text: "Vous repartez sans rien laisser ni chercher à comprendre.", score: 0, note: "Renonce dès le premier obstacle — aucune trace laissée, aucune tentative de transformer la visite en piste future." },
+      { id: "d", text: "Vous demandez à l'accueil les coordonnées personnelles du décideur pour le contacter autrement.", score: 1, note: "Contourne l'accueil plutôt que d'en faire un allié — approche qui peut être perçue comme intrusive." },
     ],
   },
   {
@@ -88,10 +107,10 @@ export const SJT_SCENARIOS: SjtScenario[] = [
     theme: "Argumentation face à la concurrence, en rendez-vous",
     text: "Lors d'un rendez-vous en face à face, le prospect sort le devis d'un concurrent moins cher et vous demande pourquoi choisir EDICOM.",
     options: [
-      { id: "a", text: "Vous baissez immédiatement votre prix pour ne pas perdre l'affaire.", score: 1 },
-      { id: "b", text: "Vous dénigrez le concurrent pour le décrédibiliser.", score: 0 },
+      { id: "a", text: "Vous baissez immédiatement votre prix pour ne pas perdre l'affaire.", score: 1, note: "Cède sur le prix en premier réflexe plutôt que de défendre la valeur — risque de marge et de crédibilité à terme." },
+      { id: "b", text: "Vous dénigrez le concurrent pour le décrédibiliser.", score: 0, note: "Dénigrement du concurrent — perçu négativement par la plupart des acheteurs B2B et nuit à l'image professionnelle." },
       { id: "c", text: "Vous mettez en avant, avec des exemples concrets, la valeur différenciante de votre offre en lien avec ses besoins précis.", score: 3 },
-      { id: "d", text: "Vous répondez que « le prix, c'est le prix » et attendez sa décision.", score: 1 },
+      { id: "d", text: "Vous répondez que « le prix, c'est le prix » et attendez sa décision.", score: 1, note: "Réponse passive qui n'argumente pas la valeur — laisse le prospect seul avec sa comparaison de prix." },
     ],
   },
   {
@@ -99,10 +118,10 @@ export const SJT_SCENARIOS: SjtScenario[] = [
     theme: "Gestion du temps sur une tournée",
     text: "Votre rendez-vous précédent s'éternise et vous savez que vous allez être en retard pour votre prochain rendez-vous physique.",
     options: [
-      { id: "a", text: "Vous écourtez brutalement l'entretien en cours sans prévenir, pour filer au rendez-vous suivant.", score: 1 },
+      { id: "a", text: "Vous écourtez brutalement l'entretien en cours sans prévenir, pour filer au rendez-vous suivant.", score: 1, note: "Traite le prospect en cours sans égard — risque d'abîmer une relation pour en préserver une autre." },
       { id: "b", text: "Vous prévenez rapidement le prochain prospect de votre retard, tout en clôturant proprement l'entretien en cours.", score: 3 },
-      { id: "c", text: "Vous annulez le rendez-vous suivant sans prévenir personne.", score: 0 },
-      { id: "d", text: "Vous restez concentré sur l'entretien en cours et laissez le prochain prospect sans nouvelles jusqu'à votre arrivée.", score: 1 },
+      { id: "c", text: "Vous annulez le rendez-vous suivant sans prévenir personne.", score: 0, note: "Absence totale de communication — laisse un prospect sans nouvelles, dommageable pour l'image d'EDICOM." },
+      { id: "d", text: "Vous restez concentré sur l'entretien en cours et laissez le prochain prospect sans nouvelles jusqu'à votre arrivée.", score: 1, note: "Ne communique pas proactivement son retard — manque de anticipation dans la gestion de sa tournée." },
     ],
   },
   {
@@ -110,9 +129,9 @@ export const SJT_SCENARIOS: SjtScenario[] = [
     theme: "Traitement d'une réclamation lors d'une visite de suivi",
     text: "Lors d'une visite de suivi chez un client existant, celui-ci se plaint que les contacts fournis par votre base de données B2B ne correspondaient pas à sa cible.",
     options: [
-      { id: "a", text: "Vous lui dites que la base est fiable et que le problème vient sûrement de son argumentaire.", score: 0 },
+      { id: "a", text: "Vous lui dites que la base est fiable et que le problème vient sûrement de son argumentaire.", score: 0, note: "Renvoie la responsabilité sur le client sans investiguer — risque réel de perdre un client existant." },
       { id: "b", text: "Vous écoutez sa réclamation sur place, creusez les critères utilisés, et proposez un ajustement du ciblage avec un suivi.", score: 3 },
-      { id: "c", text: "Vous notez sa réclamation pour la transférer au service technique sans reformuler ni creuser.", score: 1 },
+      { id: "c", text: "Vous notez sa réclamation pour la transférer au service technique sans reformuler ni creuser.", score: 1, note: "Traite la réclamation en simple messager, sans montrer d'implication personnelle dans la résolution." },
       { id: "d", text: "Vous lui offrez un geste commercial immédiat sans comprendre l'origine du problème.", score: 2 },
     ],
   },
@@ -121,10 +140,10 @@ export const SJT_SCENARIOS: SjtScenario[] = [
     theme: "Redevabilité face à un objectif terrain manqué",
     text: "Vous n'avez pas atteint votre objectif mensuel de nouveaux contrats signés sur le terrain. Votre manager vous demande des explications.",
     options: [
-      { id: "a", text: "Vous évoquez uniquement des facteurs externes (secteur difficile, mauvaise période).", score: 0 },
+      { id: "a", text: "Vous évoquez uniquement des facteurs externes (secteur difficile, mauvaise période).", score: 0, note: "Externalise entièrement la responsabilité — aucune analyse de sa propre activité ni plan d'action proposé." },
       { id: "b", text: "Vous analysez objectivement votre activité terrain (nombre de visites, taux de transformation) et proposez un plan d'action concret.", score: 3 },
-      { id: "c", text: "Vous minimisez l'écart en disant que ce n'est pas si grave.", score: 0 },
-      { id: "d", text: "Vous promettez de « faire plus de visites » sans détailler comment.", score: 1 },
+      { id: "c", text: "Vous minimisez l'écart en disant que ce n'est pas si grave.", score: 0, note: "Minimise l'objectif manqué au lieu d'en tirer des enseignements — signal faible de redevabilité." },
+      { id: "d", text: "Vous promettez de « faire plus de visites » sans détailler comment.", score: 1, note: "Bonne intention affichée mais sans plan concret ni indicateurs — à challenger en entretien." },
     ],
   },
 ];
@@ -163,12 +182,14 @@ export function computeResults(
   const dimTotals: Record<string, { sum: number; n: number }> = {};
   for (const key of Object.keys(DIMENSION_LABELS)) dimTotals[key] = { sum: 0, n: 0 };
 
+  const weakItems: string[] = [];
   for (const ans of behavAnswers) {
     const item = BEHAVIORAL_ITEMS.find((b) => b.id === ans.id);
     if (!item) continue;
     const val = item.reverse ? 6 - ans.val : ans.val;
     dimTotals[item.dimKey].sum += val;
     dimTotals[item.dimKey].n += 1;
+    if (val <= 2) weakItems.push(item.id);
   }
 
   const dims: DimensionScore[] = Object.entries(dimTotals).map(([key, v]) => ({
@@ -179,7 +200,7 @@ export function computeResults(
   const behavAvg = Math.round(dims.reduce((a, d) => a + d.pct, 0) / dims.length);
 
   let sjtScore = 0;
-  const weakScenarios: { theme: string; text: string; score: number }[] = [];
+  const weakScenarios: { theme: string; text: string; score: number; note?: string }[] = [];
   for (const ans of sjtAnswers) {
     const scenario = SJT_SCENARIOS.find((s) => s.id === ans.id);
     if (!scenario) continue;
@@ -187,7 +208,7 @@ export function computeResults(
     if (!opt) continue;
     sjtScore += opt.score;
     if (opt.score <= 1) {
-      weakScenarios.push({ theme: scenario.theme, text: opt.text, score: opt.score });
+      weakScenarios.push({ theme: scenario.theme, text: opt.text, score: opt.score, note: opt.note });
     }
   }
   const sjtTotal = SJT_SCENARIOS.length * 3;
@@ -200,5 +221,5 @@ export function computeResults(
 
   const weakDims = dims.filter((d) => d.pct < 50).map((d) => d.key);
 
-  return { dims, behavAvg, sjtScore, sjtTotal, globalScore, recommendation, weakDims, weakScenarios };
+  return { dims, behavAvg, sjtScore, sjtTotal, globalScore, recommendation, weakDims, weakItems, weakScenarios };
 }
