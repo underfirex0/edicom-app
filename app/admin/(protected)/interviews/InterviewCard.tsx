@@ -10,6 +10,7 @@ import {
   type FormState,
 } from "./actions";
 import { RecoBadge } from "@/components/ui";
+import CopyTestLink from "@/components/CopyTestLink";
 import type { Recommendation } from "@/lib/types";
 
 function CompleteSubmit() {
@@ -29,6 +30,7 @@ export default function InterviewCard({
   interviewId,
   candidateId,
   candidateName,
+  candidateEmail,
   score,
   recommendation,
   scheduledAt,
@@ -38,6 +40,7 @@ export default function InterviewCard({
   interviewId: string;
   candidateId: string;
   candidateName: string;
+  candidateEmail: string;
   score: number | null;
   recommendation: Recommendation | null;
   scheduledAt: string;
@@ -66,6 +69,7 @@ export default function InterviewCard({
           </div>
         </div>
         {score !== null && recommendation && <RecoBadge reco={recommendation} />}
+        {score === null && <CopyTestLink email={candidateEmail} label="Lien du test" />}
         {mode === "idle" && (
           <div className="flex items-center gap-2 shrink-0">
             <button

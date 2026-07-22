@@ -42,6 +42,7 @@ export default async function InterviewsPage() {
               key={c.id}
               candidateId={c.id}
               fullName={c.fullName}
+              email={c.email}
               status={c.status}
               score={c.result?.globalScore ?? null}
               recommendation={c.result?.recommendation ?? null}
@@ -61,6 +62,7 @@ export default async function InterviewsPage() {
               interviewId={iv.id}
               candidateId={iv.candidateId}
               candidateName={iv.candidateName}
+              candidateEmail={iv.candidateEmail}
               score={iv.candidateScore}
               recommendation={iv.candidateRecommendation}
               scheduledAt={iv.scheduledAt}

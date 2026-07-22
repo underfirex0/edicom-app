@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { scheduleInterviewAction, type FormState } from "./actions";
 import { RecoBadge, StatusPill } from "@/components/ui";
+import CopyTestLink from "@/components/CopyTestLink";
 import type { Recommendation } from "@/lib/types";
 
 function SubmitButton() {
@@ -22,12 +23,14 @@ function SubmitButton() {
 export default function ScheduleRow({
   candidateId,
   fullName,
+  email,
   status,
   score,
   recommendation,
 }: {
   candidateId: string;
   fullName: string;
+  email: string;
   status: string;
   score: number | null;
   recommendation: Recommendation | null;
@@ -47,6 +50,7 @@ export default function ScheduleRow({
           )}
         </div>
         {recommendation ? <RecoBadge reco={recommendation} /> : <StatusPill status={status} />}
+        {score === null && <CopyTestLink email={email} />}
         {!state?.success && (
           <button
             onClick={() => setOpen((v) => !v)}
