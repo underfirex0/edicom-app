@@ -52,7 +52,7 @@ const SCENES: Scene[] = [
   },
 ];
 
-const SCENE_DURATION = 6500;
+const NEXT_HIGHLIGHT_DELAY = 2200;
 
 function AnimatedCounter({ value }: { value: number }) {
   const [n, setN] = useState(0);
@@ -73,17 +73,55 @@ function AnimatedCounter({ value }: { value: number }) {
   return <>{n}</>;
 }
 
-export default function Presentation({ onDone }: { onDone?: () => void }) {
+export default function Presentation() {
+  const [started, setStarted] = useState(false);
   const [index, setIndex] = useState(0);
-  const isFinal = SCENES[index].final;
-
-  useEffect(() => {
-    if (isFinal) return;
-    const t = setTimeout(() => setIndex((i) => Math.min(i + 1, SCENES.length - 1)), SCENE_DURATION);
-    return () => clearTimeout(t);
-  }, [index, isFinal]);
+  const [nextHighlighted, setNextHighlighted] = useState(false);
 
   const scene = SCENES[index];
+  const isFirst = index === 0;
+  const isLast = index === SCENES.length - 1;
+
+  useEffect(() => {
+    if (!started) return;
+    setNextHighlighted(false);
+    const t = setTimeout(() => setNextHighlighted(true), NEXT_HIGHLIGHT_DELAY);
+    return () => clearTimeout(t);
+  }, [index, started]);
+
+  function goNext() {
+    setIndex((i) => Math.min(i + 1, SCENES.length - 1));
+  }
+  function goBack() {
+    setIndex((i) => Math.max(i - 1, 0));
+  }
+
+  if (!started) {
+    return (
+      <main className="relative min-h-screen overflow-hidden bg-paper flex items-center justify-center px-6">
+        <div className="pointer-events-none absolute -top-24 -left-16 w-72 h-72 rounded-full bg-teal/10 blur-3xl eqc-orb-a" />
+        <div className="pointer-events-none absolute -bottom-28 -right-10 w-80 h-80 rounded-full bg-copper/15 blur-3xl eqc-orb-b" />
+        <div className="relative text-center max-w-md">
+          <div className="eqc-fade-up font-mono text-[11px] tracking-[0.14em] uppercase text-copper mb-4">
+            EDICOM · Télécontact.ma
+          </div>
+          <h1 className="eqc-fade-up font-display text-[26px] font-semibold leading-tight" style={{ animationDelay: "0.1s" }}>
+            Avant votre entretien, découvrez qui nous sommes
+          </h1>
+          <p className="eqc-fade-up text-[14.5px] text-muted mt-4 leading-relaxed" style={{ animationDelay: "0.2s" }}>
+            Une présentation rapide, à votre rythme — quelques écrans, vous avancez quand vous êtes prêt(e).
+          </p>
+          <button
+            onClick={() => setStarted(true)}
+            className="focus-ring eqc-fade-up mt-8 rounded-2xl bg-ink text-white font-medium text-[15px] px-7 py-3.5 hover:bg-black transition-colors"
+            style={{ animationDelay: "0.3s" }}
+          >
+            Commencez la présentation
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-paper flex items-center justify-center px-6">
@@ -134,8 +172,11 @@ export default function Presentation({ onDone }: { onDone?: () => void }) {
             </ul>
           )}
 
-          {isFinal && (
-            <div className="eqc-fade-up w-9 h-9 mx-auto rounded-full bg-teal flex items-center justify-center mt-8" style={{ animationDelay: "0.3s" }}>
+          {isLast && (
+            <div
+              className="eqc-fade-up w-9 h-9 mx-auto rounded-full bg-teal flex items-center justify-center mt-8"
+              style={{ animationDelay: "0.3s" }}
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M4 12.5L9.5 18L20 6" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -145,9 +186,11 @@ export default function Presentation({ onDone }: { onDone?: () => void }) {
 
         <div className="flex items-center justify-center gap-2 mt-10">
           {SCENES.map((_, i) => (
-            <span
+            <button
               key={i}
-              className="h-1.5 rounded-full transition-all duration-500"
+              onClick={() => setIndex(i)}
+              aria-label={`Écran ${i + 1}`}
+              className="focus-ring h-1.5 rounded-full transition-all duration-500"
               style={{
                 width: i === index ? "22px" : "6px",
                 backgroundColor: i === index ? "#BD8A4F" : "#E7E3DA",
@@ -156,14 +199,27 @@ export default function Presentation({ onDone }: { onDone?: () => void }) {
           ))}
         </div>
 
-        {!isFinal && (
+        <div className="flex items-center justify-between mt-8">
           <button
-            onClick={() => setIndex(SCENES.length - 1)}
-            className="focus-ring absolute -bottom-14 right-0 font-mono text-[11.5px] text-muted hover:text-ink"
+            onClick={goBack}
+            disabled={isFirst}
+            className="focus-ring rounded-xl border border-line bg-white text-[13.5px] font-medium px-4 py-2.5 text-ink/70 hover:bg-paper disabled:opacity-0 disabled:pointer-events-none transition-opacity"
           >
-            Passer →
+            ← Précédent
           </button>
-        )}
+
+          {!isLast && (
+            <button
+              onClick={goNext}
+              className={
+                "focus-ring rounded-xl bg-ink text-white font-medium text-[13.5px] px-5 py-2.5 hover:bg-black transition-transform " +
+                (nextHighlighted ? "eqc-cta-pulse" : "")
+              }
+            >
+              Suivant →
+            </button>
+          )}
+        </div>
       </div>
     </main>
   );
