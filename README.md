@@ -191,7 +191,19 @@ que ce candidat précis a répondu. Pour l'activer :
 Cette fonctionnalité utilise votre propre clé API Anthropic et engendre donc un coût minime par
 génération (quelques centimes), facturé sur votre compte Anthropic — pas sur Claude.ai.
 
-## 8. Développement local (optionnel)
+## 9. Nouveau : présentation EDICOM après le test (gratuit, sans outil externe)
+
+Une fois le test terminé, le candidat voit maintenant une courte présentation animée (~30
+secondes, 5 écrans qui s'enchaînent tout seuls) qui explique qui est EDICOM/Télécontact, ce que
+fait l'entreprise, ce qu'implique le poste de commercial terrain, et pourquoi la rejoindre —
+avant le message final "installez-vous, le recruteur arrive".
+
+C'est entièrement construit en code (animations CSS), donc **aucun coût, aucun compte
+supplémentaire** — contrairement à un vrai fichier vidéo généré par IA qui nécessiterait un
+abonnement à un service tiers payant. Le contenu (textes, chiffres, arguments) se modifie
+directement dans `app/test/done/Presentation.tsx` si vous voulez l'ajuster.
+
+## 10. Développement local (optionnel)
 
 ```bash
 npm install
