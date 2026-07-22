@@ -1,3 +1,37 @@
+export interface PersonalInfo {
+  fullName: string;
+  phone: string;
+  email: string;
+  city: string;
+  age: string;
+  familyStatus: string;
+  drivingLicense: boolean | null;
+  vehicle: boolean | null;
+  availability: string;
+  desiredSalary: string;
+  startDate: string;
+}
+
+export interface ProfessionalBackground {
+  lastPosition: string;
+  company: string;
+  duration: string;
+  leavingReason: string;
+  bestSale: string;
+  biggestFailure: string;
+  failureLesson: string;
+}
+
+export interface Motivation {
+  whyEdicom: string;
+  whatMotivates: string;
+}
+
+export interface OpenResponses {
+  pitch: string;
+  whyHireYou: string;
+}
+
 export type Recommendation = "good" | "watch" | "risk";
 
 export type InterviewStatus = "scheduled" | "completed" | "no_show" | "cancelled";

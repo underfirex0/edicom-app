@@ -1,6 +1,14 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { CandidateStatus, Recommendation, DimensionScore } from "@/lib/types";
+import type {
+  CandidateStatus,
+  Recommendation,
+  DimensionScore,
+  PersonalInfo,
+  ProfessionalBackground,
+  Motivation,
+  OpenResponses,
+} from "@/lib/types";
 
 export interface AiBrief {
   synthesis: string;
@@ -28,6 +36,12 @@ export interface CandidateRecord {
     sjtAnswers: { id: string; optionId: string }[];
     submittedAt: string;
     aiBrief: AiBrief | null;
+    applicationInfo: {
+      personalInfo: PersonalInfo;
+      background: ProfessionalBackground;
+      motivation: Motivation;
+    } | null;
+    openResponses: OpenResponses | null;
   } | null;
 }
 
@@ -67,6 +81,13 @@ export async function getAllCandidates(): Promise<CandidateRecord[]> {
               sjtAnswers: r.sjt_answers,
               submittedAt: r.submitted_at,
               aiBrief: (r.ai_brief as AiBrief | null) ?? null,
+              applicationInfo:
+                (r.application_info as {
+                  personalInfo: PersonalInfo;
+                  background: ProfessionalBackground;
+                  motivation: Motivation;
+                } | null) ?? null,
+              openResponses: (r.open_responses as OpenResponses | null) ?? null,
             }
           : null,
       };

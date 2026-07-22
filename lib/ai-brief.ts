@@ -39,6 +39,30 @@ function buildPrompt(candidate: CandidateRecord): string {
 
   const dimLines = r.dims.map((d) => `${d.label} : ${d.pct}%`).join(", ");
 
+  const appInfo = r.applicationInfo;
+  const backgroundBlock = appInfo
+    ? `PARCOURS PROFESSIONNEL :
+Dernier poste : ${appInfo.background.lastPosition} chez ${appInfo.background.company} (${appInfo.background.duration})
+Raison de départ : ${appInfo.background.leavingReason}
+Plus belle réussite commerciale : ${appInfo.background.bestSale}
+Plus gros échec commercial : ${appInfo.background.biggestFailure}
+Ce qu'il/elle en a appris : ${appInfo.background.failureLesson}
+
+MOTIVATION :
+Pourquoi rejoindre EDICOM : ${appInfo.motivation.whyEdicom}
+Ce qui le/la motive le plus : ${appInfo.motivation.whatMotivates}
+`
+    : "";
+
+  const openBlock = r.openResponses
+    ? `MISE EN SITUATION ORALE (pitch de 1 minute pour présenter Télécontact.ma à un dirigeant) :
+${r.openResponses.pitch}
+
+POURQUOI IL/ELLE PENSE MÉRITER LE POSTE :
+${r.openResponses.whyHireYou}
+`
+    : "";
+
   return `Tu es un expert RH spécialisé dans le recrutement de commerciaux terrain B2B (visites physiques chez le prospect, pas de vente par téléphone). Une entreprise marocaine (EDICOM / Télécontact.ma) a fait passer un test de pré-qualification à un candidat commercial. Voici ses réponses brutes :
 
 SCORES PAR COMPÉTENCE : ${dimLines}
@@ -50,6 +74,8 @@ ${behavLines}
 RÉPONSES AUX MISES EN SITUATION :
 ${sjtLines}
 
+${backgroundBlock}
+${openBlock}
 À partir de ces réponses concrètes (pas des scores seuls), rédige :
 1. Une courte synthèse (3-4 phrases maximum, en français) de ce que ces réponses révèlent vraiment sur ce candidat pour un poste terrain — ton factuel, sans jargon RH creux, en citant au moins un élément concret de ses réponses.
 2. Exactement 5 questions d'entretien, en français, à poser à CE candidat précis. Chaque question doit être directement motivée par une réponse spécifique qu'il/elle a donnée (mentionne le sujet concerné), pas une question générique. Formule-les comme un recruteur les poserait à l'oral.

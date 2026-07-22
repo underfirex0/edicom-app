@@ -29,6 +29,8 @@ create table if not exists candidates (
 create table if not exists test_results (
   id uuid primary key default gen_random_uuid(),
   candidate_id uuid not null unique references candidates(id) on delete cascade,
+  application_info jsonb,
+  open_responses jsonb,
   behavioral_answers jsonb not null,
   sjt_answers jsonb not null,
   dimension_scores jsonb not null,

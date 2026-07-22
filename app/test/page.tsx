@@ -16,5 +16,11 @@ export default async function TestPage() {
   if (!candidate) redirect("/login");
   if (candidate.status === "completed") redirect("/test/already-submitted");
 
-  return <TestWizard candidateName={profile?.full_name ?? "candidat(e)"} questions={getPublicQuestions()} />;
+  return (
+    <TestWizard
+      candidateName={profile?.full_name ?? "candidat(e)"}
+      candidateEmail={profile?.email ?? user?.email ?? ""}
+      questions={getPublicQuestions()}
+    />
+  );
 }

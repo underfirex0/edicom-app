@@ -3,10 +3,15 @@
 import { requireCandidate } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeResults, DEFAULT_CONFIG, type ScoringConfig } from "@/lib/scoring";
+import type { PersonalInfo, ProfessionalBackground, Motivation, OpenResponses } from "@/lib/types";
 
 export interface SubmitPayload {
+  personalInfo: PersonalInfo;
+  background: ProfessionalBackground;
+  motivation: Motivation;
   behavAnswers: { id: string; val: number }[];
   sjtAnswers: { id: string; optionId: string }[];
+  openResponses: OpenResponses;
 }
 
 export async function submitTestAction(payload: SubmitPayload) {
@@ -37,6 +42,8 @@ export async function submitTestAction(payload: SubmitPayload) {
 
   const { error: insertErr } = await admin.from("test_results").insert({
     candidate_id: user!.id,
+    application_info: { personalInfo: payload.personalInfo, background: payload.background, motivation: payload.motivation },
+    open_responses: payload.openResponses,
     behavioral_answers: payload.behavAnswers,
     sjt_answers: payload.sjtAnswers,
     dimension_scores: results.dims,

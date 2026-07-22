@@ -203,7 +203,29 @@ supplémentaire** — contrairement à un vrai fichier vidéo généré par IA q
 abonnement à un service tiers payant. Le contenu (textes, chiffres, arguments) se modifie
 directement dans `app/test/done/Presentation.tsx` si vous voulez l'ajuster.
 
-## 10. Développement local (optionnel)
+## 11. Nouveau : dossier de candidature complet + mises en situation ouvertes
+
+Si votre projet Supabase existait déjà, exécutez aussi
+`supabase/migration-add-application-info.sql` dans le SQL Editor (une seule fois).
+
+Le test candidat comporte maintenant, dans l'ordre :
+1. **Informations personnelles** — coordonnées, ville, âge, situation familiale, permis,
+   véhicule, disponibilité, salaire souhaité, date d'embauche possible.
+2. **Parcours professionnel** — dernier poste, entreprise, durée, raison de départ, plus belle
+   réussite commerciale, plus gros échec commercial et ce qu'il/elle en a appris.
+3. **Motivation** — pourquoi rejoindre EDICOM, ce qui le/la motive.
+4. Le questionnaire comportemental et les mises en situation à choix multiple (inchangés).
+5. **La présentation EDICOM** (déplacée ici — au milieu du test, plus à la fin).
+6. **Mise en situation orale chronométrée** — "Présentez Télécontact.ma à un dirigeant
+   d'entreprise" avec un chronomètre indicatif d'une minute (non bloquant).
+7. **Question finale** — "Pourquoi devrions-nous vous recruter plutôt qu'un autre candidat ?"
+
+Toutes ces réponses apparaissent maintenant sur la fiche de chaque candidat dans l'admin, et
+sont aussi transmises à l'IA si vous utilisez "Générer avec l'IA" — les questions d'entretien
+suggérées tiennent désormais compte du parcours et de la motivation, pas seulement du
+questionnaire de personnalité.
+
+## 12. Développement local (optionnel)
 
 ```bash
 npm install

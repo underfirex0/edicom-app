@@ -96,6 +96,53 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
             <RecoBadge reco={r.recommendation} />
           </Card>
 
+          {r.applicationInfo && (
+            <>
+              <SectionTitle>Informations personnelles</SectionTitle>
+              <Card className="p-5 mb-8 grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-4">
+                <InfoItem label="Téléphone" value={r.applicationInfo.personalInfo.phone} />
+                <InfoItem label="Ville" value={r.applicationInfo.personalInfo.city} />
+                <InfoItem label="Âge" value={r.applicationInfo.personalInfo.age} />
+                <InfoItem
+                  label="Situation familiale"
+                  value={FAMILY_LABELS[r.applicationInfo.personalInfo.familyStatus] ?? r.applicationInfo.personalInfo.familyStatus}
+                />
+                <InfoItem label="Permis de conduire" value={r.applicationInfo.personalInfo.drivingLicense ? "Oui" : "Non"} />
+                <InfoItem label="Véhicule" value={r.applicationInfo.personalInfo.vehicle ? "Oui" : "Non"} />
+                <InfoItem
+                  label="Disponibilité"
+                  value={AVAILABILITY_LABELS[r.applicationInfo.personalInfo.availability] ?? r.applicationInfo.personalInfo.availability}
+                />
+                <InfoItem label="Salaire fixe souhaité" value={`${r.applicationInfo.personalInfo.desiredSalary} MAD`} />
+                <InfoItem
+                  label="Date d'embauche possible"
+                  value={new Date(r.applicationInfo.personalInfo.startDate).toLocaleDateString("fr-FR")}
+                />
+              </Card>
+
+              <SectionTitle>Parcours professionnel</SectionTitle>
+              <Card className="p-5 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-4 mb-4">
+                  <InfoItem label="Dernier poste" value={r.applicationInfo.background.lastPosition} />
+                  <InfoItem label="Entreprise" value={r.applicationInfo.background.company} />
+                  <InfoItem label="Durée" value={r.applicationInfo.background.duration} />
+                </div>
+                <div className="space-y-3 border-t border-line pt-4">
+                  <TextBlock label="Pourquoi il/elle a quitté cette entreprise" value={r.applicationInfo.background.leavingReason} />
+                  <TextBlock label="Sa plus belle réussite commerciale" value={r.applicationInfo.background.bestSale} />
+                  <TextBlock label="Son plus gros échec commercial" value={r.applicationInfo.background.biggestFailure} />
+                  <TextBlock label="Ce qu'il/elle en a appris" value={r.applicationInfo.background.failureLesson} />
+                </div>
+              </Card>
+
+              <SectionTitle>Motivation</SectionTitle>
+              <Card className="p-5 mb-8 space-y-3">
+                <TextBlock label="Pourquoi rejoindre EDICOM" value={r.applicationInfo.motivation.whyEdicom} />
+                <TextBlock label="Ce qui le/la motive le plus" value={r.applicationInfo.motivation.whatMotivates} />
+              </Card>
+            </>
+          )}
+
           <SectionTitle>Profil comportemental</SectionTitle>
           <Card className="p-5 mb-8 space-y-3">
             {r.dims.map((d) => {
@@ -132,6 +179,23 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
               );
             })}
           </Card>
+
+          {r.openResponses && (
+            <>
+              <SectionTitle>Mise en situation orale (1 minute chronométrée)</SectionTitle>
+              <Card className="p-5 mb-8">
+                <p className="text-[12.5px] text-muted mb-2 italic">
+                  « Présentez Télécontact.ma à un dirigeant d&apos;entreprise qui ne connaît pas nos services. »
+                </p>
+                <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{r.openResponses.pitch}</p>
+              </Card>
+
+              <SectionTitle>Pourquoi le/la recruter</SectionTitle>
+              <Card className="p-5 mb-8">
+                <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{r.openResponses.whyHireYou}</p>
+              </Card>
+            </>
+          )}
 
           <AiBriefPanel candidateId={candidate.id} existing={r.aiBrief} />
 
@@ -225,3 +289,35 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="font-mono text-[11.5px] uppercase tracking-wide text-muted mb-3">{children}</h2>;
 }
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-[11px] font-mono uppercase tracking-wide text-muted mb-1">{label}</div>
+      <div className="text-[14px]">{value || "—"}</div>
+    </div>
+  );
+}
+
+function TextBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-[11px] font-mono uppercase tracking-wide text-muted mb-1">{label}</div>
+      <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{value || "—"}</p>
+    </div>
+  );
+}
+
+const FAMILY_LABELS: Record<string, string> = {
+  celibataire: "Célibataire",
+  marie_sans_enfants: "Marié(e) sans enfants",
+  marie_avec_enfants: "Marié(e) avec enfants",
+  autre: "Autre",
+};
+
+const AVAILABILITY_LABELS: Record<string, string> = {
+  immediate: "Immédiate",
+  "1_2_semaines": "1 à 2 semaines",
+  "1_mois": "Sous 1 mois",
+  plus_1_mois: "Plus d'un mois",
+};
