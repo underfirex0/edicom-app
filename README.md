@@ -249,7 +249,27 @@ données (Supabase Realtime) : dès qu'une nouvelle réponse est enregistrée, l
 instantanément, sans délai — vous n'avez plus besoin d'actualiser ni d'attendre. Le badge
 « EN DIRECT » à côté du nom du candidat clignote brièvement à chaque mise à jour reçue.
 
-## 16. Développement local (optionnel)
+## 17. Nouveau : présentation basée sur vos vraies offres
+
+J'ai lu le contenu de `business-center.telecontact.ma` (page ArguMedia + page d'accueil) pour
+que la présentation explique le **vrai produit** que les candidats vendront, pas juste
+"l'entreprise" en général. Elle comporte maintenant 7 écrans :
+
+1. Chiffres clés (36 ans, +275K entreprises inscrites, +23K recherches/jour, 100% couverture)
+2. Le mécanisme (recherche ciblée → visibilité maximale → conversion en client)
+3. **Les 3 offres qu'ils vont présenter** — Digital Local / Digital Booster / Digital Max, avec
+   le profil de client visé pour chacune
+4. Ce que les clients de Télécontact attendent vraiment (rapidité, proximité, fiabilité, avis)
+5. Leur rôle terrain
+6. Pourquoi rejoindre EDICOM
+7. Transition vers la suite du test
+
+Ça prépare directement le candidat à la mise en situation orale plus loin dans le test
+("Présentez Télécontact.ma à un dirigeant d'entreprise") — il aura déjà vu l'essentiel de
+l'argumentaire. Pour ajuster les offres ou les chiffres plus tard (prix, nouvelles formules),
+tout est dans `components/EdicomPresentation.tsx`.
+
+## 18. Développement local (optionnel)
 
 ```bash
 npm install
