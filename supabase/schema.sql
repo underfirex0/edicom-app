@@ -31,16 +31,18 @@ create table if not exists test_results (
   candidate_id uuid not null unique references candidates(id) on delete cascade,
   application_info jsonb,
   open_responses jsonb,
-  behavioral_answers jsonb not null,
-  sjt_answers jsonb not null,
-  dimension_scores jsonb not null,
-  behav_avg int not null,
-  sjt_score int not null,
-  sjt_total int not null,
-  global_score int not null,
-  recommendation text not null check (recommendation in ('good','watch','risk')),
+  behavioral_answers jsonb,
+  sjt_answers jsonb,
+  dimension_scores jsonb,
+  behav_avg int,
+  sjt_score int,
+  sjt_total int,
+  global_score int,
+  recommendation text check (recommendation in ('good','watch','risk')),
   ai_brief jsonb,
-  submitted_at timestamptz not null default now()
+  is_complete boolean not null default false,
+  submitted_at timestamptz,
+  updated_at timestamptz not null default now()
 );
 
 create table if not exists candidate_notes (

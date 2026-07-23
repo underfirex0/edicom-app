@@ -10,7 +10,7 @@ import BackgroundStep from "./steps/BackgroundStep";
 import MotivationStep from "./steps/MotivationStep";
 import PitchStep from "./steps/PitchStep";
 import FinalQuestionStep from "./steps/FinalQuestionStep";
-import { submitTestAction, type SubmitPayload } from "./actions";
+import { submitTestAction, saveProgressAction, type SubmitPayload } from "./actions";
 import type { PersonalInfo, ProfessionalBackground, Motivation } from "@/lib/types";
 
 interface PublicQuestions {
@@ -82,6 +82,12 @@ export default function TestWizard({
 
   const total = questions.behavioral.length + questions.sjt.length;
 
+  function syncProgress(payload: Parameters<typeof saveProgressAction>[0]) {
+    saveProgressAction(payload).catch(() => {
+      /* best-effort — the full submission at the end is the source of truth */
+    });
+  }
+
   const litBars = useMemo(() => {
     const done = screen === "behav" ? behavIdx : questions.behavioral.length + sjtIdx;
     return Math.max(1, Math.ceil(((done + 1) / total) * 5));
@@ -108,7 +114,11 @@ export default function TestWizard({
 
   function selectLikert(val: number) {
     const q = questions.behavioral[behavIdx];
-    setBehavAnswers((prev) => [...prev, { id: q.id, val }]);
+    setBehavAnswers((prev) => {
+      const next = [...prev, { id: q.id, val }];
+      syncProgress({ behavAnswers: next });
+      return next;
+    });
     if (behavIdx + 1 < questions.behavioral.length) {
       setBehavIdx(behavIdx + 1);
     } else {
@@ -118,7 +128,11 @@ export default function TestWizard({
 
   function selectOption(optionId: string) {
     const q = questions.sjt[sjtIdx];
-    setSjtAnswers((prev) => [...prev, { id: q.id, optionId }]);
+    setSjtAnswers((prev) => {
+      const next = [...prev, { id: q.id, optionId }];
+      syncProgress({ sjtAnswers: next });
+      return next;
+    });
     if (sjtIdx + 1 < questions.sjt.length) {
       setSjtIdx(sjtIdx + 1);
     } else {
@@ -155,6 +169,7 @@ export default function TestWizard({
         initial={personalInfo}
         onNext={(data) => {
           setPersonalInfo(data);
+          syncProgress({ applicationInfo: { personalInfo: data } });
           setScreen("background");
         }}
       />
@@ -167,6 +182,7 @@ export default function TestWizard({
         initial={background}
         onNext={(data) => {
           setBackground(data);
+          syncProgress({ applicationInfo: { background: data } });
           setScreen("motivation");
         }}
       />
@@ -179,6 +195,7 @@ export default function TestWizard({
         initial={motivation}
         onNext={(data) => {
           setMotivation(data);
+          syncProgress({ applicationInfo: { motivation: data } });
           setScreen("behav");
         }}
       />
@@ -248,6 +265,7 @@ export default function TestWizard({
         initial={pitch}
         onNext={(text) => {
           setPitch(text);
+          syncProgress({ openResponses: { pitch: text } });
           setScreen("finalQuestion");
         }}
       />

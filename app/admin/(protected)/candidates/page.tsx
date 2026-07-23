@@ -109,9 +109,9 @@ export default async function CandidatesPage({
               </div>
               <StatusPill status={c.status} />
               <span className="font-mono text-[13.5px] text-ink/80">
-                {c.result ? `${c.result.globalScore}/100` : "—"}
+                {c.result?.isComplete ? `${c.result.globalScore}/100` : c.result ? "En cours" : "—"}
               </span>
-              {c.result ? <RecoBadge reco={c.result.recommendation} /> : <span className="text-muted text-[13px]">—</span>}
+              {c.result?.isComplete ? <RecoBadge reco={c.result.recommendation!} /> : <span className="text-muted text-[13px]">—</span>}
             </Link>
           ))}
         </Card>

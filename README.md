@@ -225,7 +225,20 @@ sont aussi transmises à l'IA si vous utilisez "Générer avec l'IA" — les que
 suggérées tiennent désormais compte du parcours et de la motivation, pas seulement du
 questionnaire de personnalité.
 
-## 12. Développement local (optionnel)
+## 13. Nouveau : réponses visibles en direct, pas seulement à la fin
+
+Si votre projet Supabase existait déjà, exécutez aussi
+`supabase/migration-add-live-progress.sql` dans le SQL Editor (une seule fois).
+
+Avant, rien n'était enregistré tant que le candidat n'avait pas terminé tout le test. Désormais,
+**chaque section est sauvegardée dès qu'elle est validée** : informations personnelles, parcours,
+motivation, chaque réponse du questionnaire comportemental, chaque mise en situation, et le pitch
+chronométré. Résultat : sur la fiche du candidat, vous voyez ses réponses apparaître au fur et à
+mesure qu'il/elle avance dans le test — avec un badge « Test en cours de remplissage » tant que ce
+n'est pas terminé — au lieu d'attendre la toute fin. Le score global, lui, n'est calculé qu'une
+fois le test entièrement soumis (il n'aurait pas de sens sur des réponses partielles).
+
+## 14. Développement local (optionnel)
 
 ```bash
 npm install

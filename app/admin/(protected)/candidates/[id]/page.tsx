@@ -19,8 +19,8 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
   const r = candidate.result;
 
   const suggestedQuestions: string[] = [];
-  if (r) {
-    r.dims
+  if (r?.isComplete) {
+    (r.dims ?? [])
       .filter((d) => d.pct < 50)
       .forEach((d) => {
         const itemsInDim = BEHAVIORAL_ITEMS.filter((it) => it.dimKey === d.key);
@@ -44,12 +44,14 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
       const scenario = SJT_SCENARIOS.find((s) => s.id === a.id);
       const opt = scenario?.options.find((o) => o.id === a.optionId);
       if (scenario && opt && opt.score <= 1) {
-        suggestedQuestions.push(
-          `« ${scenario.theme} » — ${opt.note ?? "la réponse choisie était perfectible."}`
-        );
+        suggestedQuestions.push(`« ${scenario.theme} » — ${opt.note ?? "la réponse choisie était perfectible."}`);
       }
     });
   }
+
+  const personalInfo = r?.applicationInfo?.personalInfo ?? null;
+  const background = r?.applicationInfo?.background ?? null;
+  const motivation = r?.applicationInfo?.motivation ?? null;
 
   return (
     <div className="p-8 max-w-4xl">
@@ -64,7 +66,7 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
             <StatusPill status={candidate.status} />
           </div>
         </div>
-        {r && <StatusControl candidateId={candidate.id} current={candidate.status} />}
+        {r?.isComplete && <StatusControl candidateId={candidate.id} current={candidate.status} />}
       </div>
 
       {!r ? (
@@ -72,115 +74,156 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
           <p className="text-[14.5px] text-ink/80 mb-1">
             {candidate.status === "invited"
               ? "Ce candidat n'a pas encore ouvert son lien d'invitation."
-              : "Ce candidat a commencé le test mais ne l'a pas encore terminé."}
+              : "Ce candidat a commencé le test mais aucune réponse n'est encore arrivée."}
           </p>
           <p className="text-[13px] text-muted mb-5">Invité le {new Date(candidate.createdAt).toLocaleString("fr-FR")}</p>
           <ResendInvite email={candidate.email} />
         </Card>
       ) : (
         <>
-          <Card className="p-6 flex items-center gap-6 mb-8">
-            <SignalMeter litBars={pctToBars(r.globalScore)} color={recoMeta(r.recommendation).hex} />
-            <div>
-              <div className="font-display text-[32px] font-semibold leading-none">
-                {r.globalScore}
-                <span className="text-[15px] text-muted font-sans">/100</span>
+          {r.isComplete ? (
+            <Card className="p-6 flex items-center gap-6 mb-8">
+              <SignalMeter litBars={pctToBars(r.globalScore!)} color={recoMeta(r.recommendation!).hex} />
+              <div>
+                <div className="font-display text-[32px] font-semibold leading-none">
+                  {r.globalScore}
+                  <span className="text-[15px] text-muted font-sans">/100</span>
+                </div>
+                <div className="text-[11px] font-mono uppercase tracking-wide text-muted mt-1">Score global</div>
               </div>
-              <div className="text-[11px] font-mono uppercase tracking-wide text-muted mt-1">Score global</div>
-            </div>
-            <div className="flex-1" />
-            <div className="text-right text-[13px] font-mono text-ink/70">
-              <div>Comportemental&nbsp; {r.behavAvg}/100</div>
-              <div className="mt-1">Mises en situation&nbsp; {r.sjtScore}/{r.sjtTotal}</div>
-            </div>
-            <RecoBadge reco={r.recommendation} />
-          </Card>
+              <div className="flex-1" />
+              <div className="text-right text-[13px] font-mono text-ink/70">
+                <div>Comportemental&nbsp; {r.behavAvg}/100</div>
+                <div className="mt-1">
+                  Mises en situation&nbsp; {r.sjtScore}/{r.sjtTotal}
+                </div>
+              </div>
+              <RecoBadge reco={r.recommendation!} />
+            </Card>
+          ) : (
+            <Card className="p-5 mb-8 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-copper animate-pulse shrink-0" />
+                <div>
+                  <p className="text-[14px] font-medium">Test en cours de remplissage</p>
+                  <p className="text-[12.5px] text-muted mt-0.5">
+                    Les réponses ci-dessous arrivent en direct, au fur et à mesure — dernière mise à jour{" "}
+                    {new Date(r.updatedAt).toLocaleString("fr-FR")}
+                  </p>
+                </div>
+              </div>
+              <ResendInvite email={candidate.email} />
+            </Card>
+          )}
 
-          {r.applicationInfo && (
+          {personalInfo && (
             <>
               <SectionTitle>Informations personnelles</SectionTitle>
               <Card className="p-5 mb-8 grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-4">
-                <InfoItem label="Téléphone" value={r.applicationInfo.personalInfo.phone} />
-                <InfoItem label="Ville" value={r.applicationInfo.personalInfo.city} />
-                <InfoItem label="Âge" value={r.applicationInfo.personalInfo.age} />
-                <InfoItem
-                  label="Situation familiale"
-                  value={FAMILY_LABELS[r.applicationInfo.personalInfo.familyStatus] ?? r.applicationInfo.personalInfo.familyStatus}
-                />
-                <InfoItem label="Permis de conduire" value={r.applicationInfo.personalInfo.drivingLicense ? "Oui" : "Non"} />
-                <InfoItem label="Véhicule" value={r.applicationInfo.personalInfo.vehicle ? "Oui" : "Non"} />
-                <InfoItem
-                  label="Disponibilité"
-                  value={AVAILABILITY_LABELS[r.applicationInfo.personalInfo.availability] ?? r.applicationInfo.personalInfo.availability}
-                />
-                <InfoItem label="Salaire fixe souhaité" value={`${r.applicationInfo.personalInfo.desiredSalary} MAD`} />
+                <InfoItem label="Téléphone" value={personalInfo.phone} />
+                <InfoItem label="Ville" value={personalInfo.city} />
+                <InfoItem label="Âge" value={personalInfo.age} />
+                <InfoItem label="Situation familiale" value={FAMILY_LABELS[personalInfo.familyStatus] ?? personalInfo.familyStatus} />
+                <InfoItem label="Permis de conduire" value={personalInfo.drivingLicense ? "Oui" : "Non"} />
+                <InfoItem label="Véhicule" value={personalInfo.vehicle ? "Oui" : "Non"} />
+                <InfoItem label="Disponibilité" value={AVAILABILITY_LABELS[personalInfo.availability] ?? personalInfo.availability} />
+                <InfoItem label="Salaire fixe souhaité" value={`${personalInfo.desiredSalary} MAD`} />
                 <InfoItem
                   label="Date d'embauche possible"
-                  value={new Date(r.applicationInfo.personalInfo.startDate).toLocaleDateString("fr-FR")}
+                  value={personalInfo.startDate ? new Date(personalInfo.startDate).toLocaleDateString("fr-FR") : ""}
                 />
-              </Card>
-
-              <SectionTitle>Parcours professionnel</SectionTitle>
-              <Card className="p-5 mb-8">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-4 mb-4">
-                  <InfoItem label="Dernier poste" value={r.applicationInfo.background.lastPosition} />
-                  <InfoItem label="Entreprise" value={r.applicationInfo.background.company} />
-                  <InfoItem label="Durée" value={r.applicationInfo.background.duration} />
-                </div>
-                <div className="space-y-3 border-t border-line pt-4">
-                  <TextBlock label="Pourquoi il/elle a quitté cette entreprise" value={r.applicationInfo.background.leavingReason} />
-                  <TextBlock label="Sa plus belle réussite commerciale" value={r.applicationInfo.background.bestSale} />
-                  <TextBlock label="Son plus gros échec commercial" value={r.applicationInfo.background.biggestFailure} />
-                  <TextBlock label="Ce qu'il/elle en a appris" value={r.applicationInfo.background.failureLesson} />
-                </div>
-              </Card>
-
-              <SectionTitle>Motivation</SectionTitle>
-              <Card className="p-5 mb-8 space-y-3">
-                <TextBlock label="Pourquoi rejoindre EDICOM" value={r.applicationInfo.motivation.whyEdicom} />
-                <TextBlock label="Ce qui le/la motive le plus" value={r.applicationInfo.motivation.whatMotivates} />
               </Card>
             </>
           )}
 
-          <SectionTitle>Profil comportemental</SectionTitle>
-          <Card className="p-5 mb-8 space-y-3">
-            {r.dims.map((d) => {
-              const color = d.pct < 50 ? "#C1584F" : d.pct < 70 ? "#CE9A45" : "#2F6F63";
-              return (
-                <div key={d.key} className="flex items-center gap-4">
-                  <div className="w-[190px] text-[13.5px] shrink-0">{d.label}</div>
-                  <SignalMeter litBars={pctToBars(d.pct)} color={color} />
-                  <div className="w-11 text-right font-mono text-[13px]" style={{ color }}>
-                    {d.pct}%
-                  </div>
+          {background && (
+            <>
+              <SectionTitle>Parcours professionnel</SectionTitle>
+              <Card className="p-5 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-4 mb-4">
+                  <InfoItem label="Dernier poste" value={background.lastPosition} />
+                  <InfoItem label="Entreprise" value={background.company} />
+                  <InfoItem label="Durée" value={background.duration} />
                 </div>
-              );
-            })}
-          </Card>
+                <div className="space-y-3 border-t border-line pt-4">
+                  <TextBlock label="Pourquoi il/elle a quitté cette entreprise" value={background.leavingReason} />
+                  <TextBlock label="Sa plus belle réussite commerciale" value={background.bestSale} />
+                  <TextBlock label="Son plus gros échec commercial" value={background.biggestFailure} />
+                  <TextBlock label="Ce qu'il/elle en a appris" value={background.failureLesson} />
+                </div>
+              </Card>
+            </>
+          )}
 
-          <SectionTitle>Mises en situation</SectionTitle>
-          <Card className="p-5 mb-8 divide-y divide-line">
-            {r.sjtAnswers.map((a, i) => {
-              const scenario = SJT_SCENARIOS.find((s) => s.id === a.id);
-              const opt = scenario?.options.find((o) => o.id === a.optionId);
-              if (!scenario || !opt) return null;
-              const ic = opt.score >= 3 ? { c: "#2F6F63", s: "✓" } : opt.score >= 2 ? { c: "#CE9A45", s: "–" } : { c: "#C1584F", s: "!" };
-              return (
-                <div key={i} className="flex gap-3 py-3 text-[13.5px]">
-                  <span className="w-4 text-center font-bold shrink-0" style={{ color: ic.c }}>
-                    {ic.s}
-                  </span>
+          {motivation && (
+            <>
+              <SectionTitle>Motivation</SectionTitle>
+              <Card className="p-5 mb-8 space-y-3">
+                <TextBlock label="Pourquoi rejoindre EDICOM" value={motivation.whyEdicom} />
+                <TextBlock label="Ce qui le/la motive le plus" value={motivation.whatMotivates} />
+              </Card>
+            </>
+          )}
+
+          {r.isComplete ? (
+            <>
+              <SectionTitle>Profil comportemental</SectionTitle>
+              <Card className="p-5 mb-8 space-y-3">
+                {r.dims!.map((d) => {
+                  const color = d.pct < 50 ? "#C1584F" : d.pct < 70 ? "#CE9A45" : "#2F6F63";
+                  return (
+                    <div key={d.key} className="flex items-center gap-4">
+                      <div className="w-[190px] text-[13.5px] shrink-0">{d.label}</div>
+                      <SignalMeter litBars={pctToBars(d.pct)} color={color} />
+                      <div className="w-11 text-right font-mono text-[13px]" style={{ color }}>
+                        {d.pct}%
+                      </div>
+                    </div>
+                  );
+                })}
+              </Card>
+
+              <SectionTitle>Mises en situation</SectionTitle>
+              <Card className="p-5 mb-8 divide-y divide-line">
+                {r.sjtAnswers.map((a, i) => {
+                  const scenario = SJT_SCENARIOS.find((s) => s.id === a.id);
+                  const opt = scenario?.options.find((o) => o.id === a.optionId);
+                  if (!scenario || !opt) return null;
+                  const ic =
+                    opt.score >= 3 ? { c: "#2F6F63", s: "✓" } : opt.score >= 2 ? { c: "#CE9A45", s: "–" } : { c: "#C1584F", s: "!" };
+                  return (
+                    <div key={i} className="flex gap-3 py-3 text-[13.5px]">
+                      <span className="w-4 text-center font-bold shrink-0" style={{ color: ic.c }}>
+                        {ic.s}
+                      </span>
+                      <div>
+                        <div className="font-medium">{scenario.theme}</div>
+                        <div className="text-muted mt-0.5">{opt.text}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </Card>
+            </>
+          ) : (
+            (r.behavioralAnswers.length > 0 || r.sjtAnswers.length > 0) && (
+              <>
+                <SectionTitle>Progression du questionnaire</SectionTitle>
+                <Card className="p-5 mb-8 flex gap-8">
                   <div>
-                    <div className="font-medium">{scenario.theme}</div>
-                    <div className="text-muted mt-0.5">{opt.text}</div>
+                    <div className="font-mono text-[18px] font-semibold">{r.behavioralAnswers.length}/15</div>
+                    <div className="text-[12px] text-muted mt-0.5">Profil comportemental</div>
                   </div>
-                </div>
-              );
-            })}
-          </Card>
+                  <div>
+                    <div className="font-mono text-[18px] font-semibold">{r.sjtAnswers.length}/6</div>
+                    <div className="text-[12px] text-muted mt-0.5">Mises en situation</div>
+                  </div>
+                </Card>
+              </>
+            )
+          )}
 
-          {r.openResponses && (
+          {r.openResponses?.pitch && (
             <>
               <SectionTitle>Mise en situation orale (1 minute chronométrée)</SectionTitle>
               <Card className="p-5 mb-8">
@@ -189,7 +232,11 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
                 </p>
                 <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{r.openResponses.pitch}</p>
               </Card>
+            </>
+          )}
 
+          {r.openResponses?.whyHireYou && (
+            <>
               <SectionTitle>Pourquoi le/la recruter</SectionTitle>
               <Card className="p-5 mb-8">
                 <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap">{r.openResponses.whyHireYou}</p>
@@ -197,21 +244,25 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
             </>
           )}
 
-          <AiBriefPanel candidateId={candidate.id} existing={r.aiBrief} />
+          {r.isComplete && (
+            <>
+              <AiBriefPanel candidateId={candidate.id} existing={r.aiBrief} />
 
-          <SectionTitle>Points à explorer en entretien (générés automatiquement)</SectionTitle>
-          {suggestedQuestions.length ? (
-            <ul className="space-y-2 mb-8">
-              {suggestedQuestions.map((q, i) => (
-                <li key={i} className="bg-paper border border-line rounded-2xl px-4 py-3 text-[13.5px] leading-relaxed">
-                  {q}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-[13.5px] text-muted mb-8">
-              Aucun point d&apos;alerte particulier — profil homogène sur l&apos;ensemble des dimensions.
-            </p>
+              <SectionTitle>Points à explorer en entretien (générés automatiquement)</SectionTitle>
+              {suggestedQuestions.length ? (
+                <ul className="space-y-2 mb-8">
+                  {suggestedQuestions.map((q, i) => (
+                    <li key={i} className="bg-paper border border-line rounded-2xl px-4 py-3 text-[13.5px] leading-relaxed">
+                      {q}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-[13.5px] text-muted mb-8">
+                  Aucun point d&apos;alerte particulier — profil homogène sur l&apos;ensemble des dimensions.
+                </p>
+              )}
+            </>
           )}
         </>
       )}

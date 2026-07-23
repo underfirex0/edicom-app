@@ -26,20 +26,22 @@ export interface CandidateRecord {
   startedAt: string | null;
   completedAt: string | null;
   result: {
-    dims: DimensionScore[];
-    behavAvg: number;
-    sjtScore: number;
-    sjtTotal: number;
-    globalScore: number;
-    recommendation: Recommendation;
+    isComplete: boolean;
+    updatedAt: string;
+    dims: DimensionScore[] | null;
+    behavAvg: number | null;
+    sjtScore: number | null;
+    sjtTotal: number | null;
+    globalScore: number | null;
+    recommendation: Recommendation | null;
     behavioralAnswers: { id: string; val: number }[];
     sjtAnswers: { id: string; optionId: string }[];
-    submittedAt: string;
+    submittedAt: string | null;
     aiBrief: AiBrief | null;
     applicationInfo: {
-      personalInfo: PersonalInfo;
-      background: ProfessionalBackground;
-      motivation: Motivation;
+      personalInfo: PersonalInfo | null;
+      background: ProfessionalBackground | null;
+      motivation: Motivation | null;
     } | null;
     openResponses: OpenResponses | null;
   } | null;
@@ -71,21 +73,23 @@ export async function getAllCandidates(): Promise<CandidateRecord[]> {
         completedAt: c.completed_at,
         result: r
           ? {
-              dims: r.dimension_scores,
+              isComplete: !!r.is_complete,
+              updatedAt: r.updated_at,
+              dims: (r.dimension_scores as DimensionScore[] | null) ?? null,
               behavAvg: r.behav_avg,
               sjtScore: r.sjt_score,
               sjtTotal: r.sjt_total,
               globalScore: r.global_score,
-              recommendation: r.recommendation as Recommendation,
-              behavioralAnswers: r.behavioral_answers,
-              sjtAnswers: r.sjt_answers,
+              recommendation: (r.recommendation as Recommendation | null) ?? null,
+              behavioralAnswers: r.behavioral_answers ?? [],
+              sjtAnswers: r.sjt_answers ?? [],
               submittedAt: r.submitted_at,
               aiBrief: (r.ai_brief as AiBrief | null) ?? null,
               applicationInfo:
                 (r.application_info as {
-                  personalInfo: PersonalInfo;
-                  background: ProfessionalBackground;
-                  motivation: Motivation;
+                  personalInfo: PersonalInfo | null;
+                  background: ProfessionalBackground | null;
+                  motivation: Motivation | null;
                 } | null) ?? null,
               openResponses: (r.open_responses as OpenResponses | null) ?? null,
             }
@@ -118,7 +122,7 @@ const STATUS_KEYS: CandidateStatus[] = [
 
 export async function getAnalytics(): Promise<Analytics> {
   const all = await getAllCandidates();
-  const completed = all.filter((c) => c.result);
+  const completed = all.filter((c) => c.result?.isComplete);
 
   const statusCounts = STATUS_KEYS.reduce((acc, s) => {
     acc[s] = all.filter((c) => c.status === s).length;
@@ -127,17 +131,17 @@ export async function getAnalytics(): Promise<Analytics> {
 
   const recommendationCounts: Record<Recommendation, number> = { good: 0, watch: 0, risk: 0 };
   completed.forEach((c) => {
-    recommendationCounts[c.result!.recommendation] += 1;
+    recommendationCounts[c.result!.recommendation!] += 1;
   });
 
   const avgGlobalScore = completed.length
-    ? Math.round(completed.reduce((sum, c) => sum + c.result!.globalScore, 0) / completed.length)
+    ? Math.round(completed.reduce((sum, c) => sum + c.result!.globalScore!, 0) / completed.length)
     : 0;
 
-  const dimKeys = completed[0]?.result?.dims.map((d) => d.key) ?? [];
+  const dimKeys = completed[0]?.result?.dims?.map((d) => d.key) ?? [];
   const avgDimensions = dimKeys.map((key) => {
-    const scores = completed.map((c) => c.result!.dims.find((d) => d.key === key)?.pct ?? 0);
-    const label = completed[0]!.result!.dims.find((d) => d.key === key)!.label;
+    const scores = completed.map((c) => c.result!.dims!.find((d) => d.key === key)?.pct ?? 0);
+    const label = completed[0]!.result!.dims!.find((d) => d.key === key)!.label;
     return { key, label, avgPct: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) };
   });
 
@@ -151,12 +155,10 @@ export async function getAnalytics(): Promise<Analytics> {
   ];
   const scoreDistribution = bands.map((b) => ({
     label: b.label,
-    count: completed.filter((c) => c.result!.globalScore >= b.min && c.result!.globalScore <= b.max).length,
+    count: completed.filter((c) => c.result!.globalScore! >= b.min && c.result!.globalScore! <= b.max).length,
   }));
 
-  const topCandidates = [...completed]
-    .sort((a, b) => b.result!.globalScore - a.result!.globalScore)
-    .slice(0, 5);
+  const topCandidates = [...completed].sort((a, b) => b.result!.globalScore! - a.result!.globalScore!).slice(0, 5);
 
   const invitedTotal = all.length;
   const conversionRate = invitedTotal ? Math.round((completed.length / invitedTotal) * 100) : 0;

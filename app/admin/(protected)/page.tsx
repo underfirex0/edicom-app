@@ -15,7 +15,7 @@ const STATUS_META: Record<string, { label: string; color: string }> = {
 
 export default async function AdminDashboardPage() {
   const [analytics, candidates] = await Promise.all([getAnalytics(), getAllCandidates()]);
-  const recent = candidates.filter((c) => c.result).slice(0, 6);
+  const recent = candidates.filter((c) => c.result?.isComplete).slice(0, 6);
   const maxStatus = Math.max(1, ...Object.values(analytics.statusCounts));
   const maxDist = Math.max(1, ...analytics.scoreDistribution.map((b) => b.count));
 
@@ -151,8 +151,8 @@ export default async function AdminDashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="text-[14px] font-medium truncate">{c.fullName}</div>
                 </div>
-                <span className="font-mono text-[13.5px] text-ink/80">{c.result!.globalScore}/100</span>
-                <RecoBadge reco={c.result!.recommendation} />
+                <span className="font-mono text-[13.5px] text-ink/80">{c.result!.globalScore!}/100</span>
+                <RecoBadge reco={c.result!.recommendation!} />
               </Link>
             ))}
           </Card>
@@ -178,15 +178,15 @@ export default async function AdminDashboardPage() {
               href={`/admin/candidates/${c.id}`}
               className="focus-ring flex items-center gap-5 px-5 py-4 hover:bg-paper transition-colors"
             >
-              <SignalMeter litBars={pctToBars(c.result!.globalScore)} color="#2F6F63" />
+              <SignalMeter litBars={pctToBars(c.result!.globalScore!)} color="#2F6F63" />
               <div className="flex-1 min-w-0">
                 <div className="text-[14.5px] font-medium truncate">{c.fullName}</div>
                 <div className="text-[12px] text-muted font-mono mt-0.5">
-                  {new Date(c.result!.submittedAt).toLocaleDateString("fr-FR")} · score {c.result!.globalScore}/100
+                  {new Date(c.result!.submittedAt!).toLocaleDateString("fr-FR")} · score {c.result!.globalScore!}/100
                 </div>
               </div>
               <StatusPill status={c.status} />
-              <RecoBadge reco={c.result!.recommendation} />
+              <RecoBadge reco={c.result!.recommendation!} />
             </Link>
           ))}
         </Card>

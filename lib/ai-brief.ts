@@ -37,11 +37,12 @@ function buildPrompt(candidate: CandidateRecord): string {
     .filter(Boolean)
     .join("\n");
 
-  const dimLines = r.dims.map((d) => `${d.label} : ${d.pct}%`).join(", ");
+  const dimLines = (r.dims ?? []).map((d) => `${d.label} : ${d.pct}%`).join(", ");
 
   const appInfo = r.applicationInfo;
-  const backgroundBlock = appInfo
-    ? `PARCOURS PROFESSIONNEL :
+  const backgroundBlock =
+    appInfo?.background && appInfo?.motivation
+      ? `PARCOURS PROFESSIONNEL :
 Dernier poste : ${appInfo.background.lastPosition} chez ${appInfo.background.company} (${appInfo.background.duration})
 Raison de départ : ${appInfo.background.leavingReason}
 Plus belle réussite commerciale : ${appInfo.background.bestSale}
@@ -52,7 +53,7 @@ MOTIVATION :
 Pourquoi rejoindre EDICOM : ${appInfo.motivation.whyEdicom}
 Ce qui le/la motive le plus : ${appInfo.motivation.whatMotivates}
 `
-    : "";
+      : "";
 
   const openBlock = r.openResponses
     ? `MISE EN SITUATION ORALE (pitch de 1 minute pour présenter Télécontact.ma à un dirigeant) :
@@ -95,8 +96,8 @@ export async function generateAiBrief(
         "Aucune clé API Anthropic configurée. Ajoutez la variable d'environnement ANTHROPIC_API_KEY pour activer cette fonctionnalité.",
     };
   }
-  if (!candidate.result) {
-    return { ok: false, error: "Ce candidat n'a pas encore de résultat de test." };
+  if (!candidate.result?.isComplete) {
+    return { ok: false, error: "Ce candidat n'a pas encore terminé son test." };
   }
 
   try {

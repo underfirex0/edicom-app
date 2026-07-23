@@ -67,7 +67,7 @@ export async function generateAiBriefAction(candidateId: string): Promise<AiBrie
   await requireAdmin();
 
   const candidate = await getCandidateById(candidateId);
-  if (!candidate || !candidate.result) {
+  if (!candidate || !candidate.result?.isComplete) {
     return { error: "Ce candidat n'a pas encore de résultat de test." };
   }
 
