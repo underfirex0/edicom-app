@@ -238,7 +238,18 @@ mesure qu'il/elle avance dans le test — avec un badge « Test en cours de remp
 n'est pas terminé — au lieu d'attendre la toute fin. Le score global, lui, n'est calculé qu'une
 fois le test entièrement soumis (il n'aurait pas de sens sur des réponses partielles).
 
-## 14. Développement local (optionnel)
+## 15. Nouveau : mises à jour instantanées sur la fiche candidat (sans polling)
+
+Si votre projet Supabase existait déjà, exécutez aussi `supabase/migration-add-realtime.sql`
+dans le SQL Editor (une seule fois).
+
+Auparavant, la fiche candidat se mettait à jour via un rafraîchissement automatique toutes les
+quelques secondes. Désormais, elle est **directement connectée en temps réel** à la base de
+données (Supabase Realtime) : dès qu'une nouvelle réponse est enregistrée, la page se met à jour
+instantanément, sans délai — vous n'avez plus besoin d'actualiser ni d'attendre. Le badge
+« EN DIRECT » à côté du nom du candidat clignote brièvement à chaque mise à jour reçue.
+
+## 16. Développement local (optionnel)
 
 ```bash
 npm install

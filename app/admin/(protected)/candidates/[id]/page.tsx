@@ -9,6 +9,7 @@ import NoteForm from "./NoteForm";
 import ResendInvite from "./ResendInvite";
 import DeleteButton from "./DeleteButton";
 import AiBriefPanel from "./AiBriefPanel";
+import LiveCandidateWatcher from "@/components/LiveCandidateWatcher";
 
 export default async function CandidateDetailPage({ params }: { params: { id: string } }) {
   const candidate = await getCandidateById(params.id);
@@ -59,7 +60,10 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
 
       <div className="flex items-start justify-between mt-4 mb-8">
         <div>
-          <h1 className="font-display text-[24px] font-semibold">{candidate.fullName}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-[24px] font-semibold">{candidate.fullName}</h1>
+            <LiveCandidateWatcher candidateId={candidate.id} />
+          </div>
           <div className="flex items-center gap-2 mt-1.5">
             <span className="text-[13px] text-muted">{candidate.email}</span>
             <span className="text-line">·</span>

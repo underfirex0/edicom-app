@@ -101,6 +101,30 @@ create policy "read own candidate row" on candidates
 create policy "read own test result" on test_results
   for select using (candidate_id = auth.uid());
 
+-- Lets an authenticated admin subscribe to live changes on a specific
+-- candidate's test_results row (used for instant, non-polling updates on
+-- the candidate detail page). security definer avoids RLS recursion when
+-- checking the caller's role.
+create or replace function is_admin() returns boolean
+language sql security definer stable
+as $$
+  select exists (select 1 from profiles where id = auth.uid() and role = 'admin');
+$$;
+
+create policy "admins read all test_results" on test_results
+  for select using (is_admin());
+
+-- Enable Supabase Realtime broadcasts for test_results (safe to run twice).
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'test_results'
+  ) then
+    alter publication supabase_realtime add table test_results;
+  end if;
+end $$;
+
 -- candidate_notes and scoring_config: no policies for anon/authenticated —
 -- only the service-role key (used in Server Actions) can read/write them.
 
