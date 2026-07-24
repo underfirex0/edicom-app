@@ -31,8 +31,8 @@ export default function PitchStep({
     <TestShell>
       <SectionEyebrow>Mise en situation</SectionEyebrow>
       <h1 className="font-display text-[20px] font-semibold leading-snug mb-2">
-        Vous avez une minute. Présentez Télécontact.ma à un dirigeant d&apos;entreprise qui ne connaît pas nos
-        services.
+        Vous avez une minute pour présenter Télécontact.ma à un dirigeant d&apos;entreprise qui ne connaît pas
+        nos services.
       </h1>
       <p className="text-[13px] text-muted mb-5">
         Le chronomètre est indicatif — prenez le temps de finir votre idée, ce n&apos;est pas bloquant.

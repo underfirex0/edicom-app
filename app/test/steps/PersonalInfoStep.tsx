@@ -25,7 +25,6 @@ export default function PersonalInfoStep({
     data.drivingLicense !== null &&
     data.vehicle !== null &&
     data.availability &&
-    data.desiredSalary.trim() &&
     data.startDate.trim();
 
   function set<K extends keyof PersonalInfo>(key: K, value: PersonalInfo[K]) {
@@ -93,14 +92,6 @@ export default function PersonalInfoStep({
             <option value="1_mois">Sous 1 mois</option>
             <option value="plus_1_mois">Plus d'un mois</option>
           </FormSelect>
-        </FormField>
-        <FormField label="Salaire fixe souhaité (MAD)">
-          <FormInput
-            value={data.desiredSalary}
-            onChange={(e) => set("desiredSalary", e.target.value)}
-            placeholder="ex. 4 000"
-            required
-          />
         </FormField>
         <FormField label="Date possible d'embauche" span2>
           <FormInput type="date" value={data.startDate} onChange={(e) => set("startDate", e.target.value)} required />

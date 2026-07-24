@@ -2,105 +2,51 @@
 
 import { useEffect, useState } from "react";
 
-interface Offer {
-  name: string;
-  tagline: string;
-  audience: string;
-}
-
 interface Scene {
   eyebrow: string;
   title: string;
-  bullets?: string[];
-  stat?: { value: number; suffix: string; label: string };
-  subStats?: { value: string; label: string }[];
-  offers?: Offer[];
   body?: string;
+  bullets?: string[];
+  subStats?: { value: string; label: string }[];
+  closing?: boolean;
 }
 
 const SCENES: Scene[] = [
   {
-    eyebrow: "EDICOM · Télécontact.ma",
-    title: "Le 1er réflexe pour la recherche professionnelle au Maroc.",
-    stat: { value: 36, suffix: " ans", label: "d'expertise" },
+    eyebrow: "Bienvenue",
+    title: "Bienvenue dans l'aventure Telecontact.ma",
+    body: "Vous connaissez déjà la plateforme qui aide à trouver rapidement des entreprises et des professionnels fiables au Maroc.",
     subStats: [
-      { value: "275K+", label: "entreprises inscrites" },
-      { value: "23K+", label: "recherches / jour" },
-      { value: "100%", label: "couverture nationale" },
+      { value: "275 000+", label: "entreprises réunies" },
+      { value: "36 ans", label: "d'expertise" },
     ],
   },
   {
-    eyebrow: "Ce que nous faisons",
-    title: "Connecter la demande à votre expertise, au bon moment",
+    eyebrow: "Votre mission",
+    title: "Votre mission de commercial",
     bullets: [
-      "Recherche ciblée — un client cherche activement un professionnel près de chez lui",
-      "Visibilité maximale — l'entreprise apparaît en priorité au moment précis de la recherche",
-      "Conversion — le prospect contacte directement l'entreprise : appel, message, devis",
+      "Vous démarrez avec une base de données qualifiée d'entreprises et de contacts.",
+      "Votre rôle : prospecter, rencontrer des professionnels, et enrichir votre portefeuille sur le terrain.",
+      "Chaque visite est une opportunité de créer de la valeur pour le client.",
     ],
   },
   {
-    eyebrow: "Les offres que vous allez présenter",
-    title: "Trois formules, une pour chaque ambition",
-    offers: [
-      { name: "Digital Local", tagline: "Visibilité de proximité", audience: "Commerces, artisans, professions libérales" },
-      { name: "Digital Booster", tagline: "Visibilité régionale", audience: "Entreprises en croissance" },
-      { name: "Digital Max", tagline: "Rayonnement multi-régions", audience: "Grandes entreprises, réseaux nationaux" },
-    ],
-  },
-  {
-    eyebrow: "Ce que veulent leurs clients",
-    title: "Être trouvé au bon moment, par les bonnes personnes",
+    eyebrow: "Nos solutions",
+    title: "Proposer la bonne solution",
     bullets: [
-      "Trouver un professionnel fiable en moins de 3 clics",
-      "Une recherche locale précise, dans leur quartier",
-      "Des avis clients authentiques, pour choisir en confiance",
+      "Visibilité locale, régionale, ou présence nationale — une formule pour chaque entreprise.",
+      "Votre réussite : écouter, conseiller, et recommander la formule adaptée.",
+      "Vendre, ce n'est pas seulement vendre — c'est accompagner le développement du client.",
     ],
   },
   {
-    eyebrow: "Votre rôle",
-    title: "Vous serez sur le terrain, pas derrière un bureau",
-    bullets: [
-      "Un portefeuille de prospects qualifiés fournis",
-      "Des outils performants pensés pour vendre",
-      "Une vraie autonomie sur votre secteur",
-    ],
-  },
-  {
-    eyebrow: "Pourquoi nous rejoindre",
-    title: "Grandir avec nous, concrètement",
-    bullets: [
-      "Salaire fixe + commissions attractives et déplafonnées",
-      "Une formation dès votre arrivée",
-      "De réelles perspectives vers des postes de management",
-    ],
-  },
-  {
-    eyebrow: "Merci pour votre attention",
-    title: "Encore quelques questions et ce sera terminé",
-    body: "Deux dernières mises en situation vous attendent — vous y êtes presque.",
+    eyebrow: "En route",
+    title: "Ensemble, faisons de chaque rendez-vous une nouvelle opportunité de croissance.",
+    closing: true,
   },
 ];
 
 const NEXT_HIGHLIGHT_DELAY = 2200;
-
-function AnimatedCounter({ value }: { value: number }) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    setN(0);
-    const start = performance.now();
-    const duration = 1100;
-    let raf: number;
-    function tick(now: number) {
-      const progress = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setN(Math.round(eased * value));
-      if (progress < 1) raf = requestAnimationFrame(tick);
-    }
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [value]);
-  return <>{n}</>;
-}
 
 export default function EdicomPresentation({ onFinish }: { onFinish: () => void }) {
   const [started, setStarted] = useState(false);
@@ -139,11 +85,10 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
             EDICOM · Télécontact.ma
           </div>
           <h1 className="eqc-fade-up font-display text-[26px] font-semibold leading-tight" style={{ animationDelay: "0.1s" }}>
-            Avant de finir, découvrez ce que vous allez vendre
+            Avant de finir, une petite présentation
           </h1>
           <p className="eqc-fade-up text-[14.5px] text-muted mt-4 leading-relaxed" style={{ animationDelay: "0.2s" }}>
-            Qui nous sommes, ce que nous vendons, et pourquoi nos clients en ont besoin — à votre
-            rythme, quelques écrans, vous avancez quand vous êtes prêt(e).
+            Quatre écrans courts, à votre rythme — vous avancez quand vous êtes prêt(e).
           </p>
           <button
             onClick={() => setStarted(true)}
@@ -162,45 +107,38 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
       <div className="pointer-events-none absolute -top-24 -left-16 w-72 h-72 rounded-full bg-teal/10 blur-3xl eqc-orb-a" />
       <div className="pointer-events-none absolute -bottom-28 -right-10 w-80 h-80 rounded-full bg-copper/15 blur-3xl eqc-orb-b" />
 
-      <div className="relative w-full max-w-xl">
+      <div className="relative w-full max-w-lg">
         <div key={index} className="text-center">
-          <div className="eqc-fade-up font-mono text-[11px] tracking-[0.14em] uppercase text-copper mb-4">
+          <div className="eqc-fade-up font-mono text-[11px] tracking-[0.14em] uppercase text-copper mb-5">
             {scene.eyebrow}
           </div>
 
-          {scene.stat && (
-            <div className="eqc-fade-up mb-3" style={{ animationDelay: "0.08s" }}>
-              <div className="font-display text-[64px] font-semibold leading-none text-ink">
-                <AnimatedCounter value={scene.stat.value} />
-                {scene.stat.suffix}
-              </div>
-              <div className="text-[13px] text-muted mt-2">{scene.stat.label}</div>
-            </div>
-          )}
-
           <h1
-            className="eqc-fade-up font-display text-[24px] md:text-[28px] font-semibold leading-tight mt-1"
-            style={{ animationDelay: "0.12s" }}
+            className={
+              "eqc-fade-up font-display font-semibold leading-tight " +
+              (scene.closing ? "text-[28px] md:text-[32px]" : "text-[24px] md:text-[27px]")
+            }
+            style={{ animationDelay: "0.1s" }}
           >
             {scene.title}
           </h1>
 
           {scene.body && (
-            <p className="eqc-fade-up text-[14.5px] text-muted mt-4 leading-relaxed" style={{ animationDelay: "0.22s" }}>
+            <p className="eqc-fade-up text-[15px] text-ink/70 mt-5 leading-relaxed max-w-md mx-auto" style={{ animationDelay: "0.2s" }}>
               {scene.body}
             </p>
           )}
 
           {scene.subStats && (
-            <div className="mt-6 grid grid-cols-3 gap-3 max-w-sm mx-auto">
+            <div className="mt-7 flex items-center justify-center gap-4">
               {scene.subStats.map((s, i) => (
                 <div
                   key={i}
-                  className="eqc-fade-up bg-panel border border-line rounded-2xl px-2 py-3"
-                  style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+                  className="eqc-fade-up bg-panel border border-line rounded-2xl px-6 py-4 min-w-[140px]"
+                  style={{ animationDelay: `${0.32 + i * 0.12}s` }}
                 >
-                  <div className="font-display text-[18px] font-semibold text-copper">{s.value}</div>
-                  <div className="text-[10.5px] text-muted mt-0.5 leading-snug">{s.label}</div>
+                  <div className="font-display text-[22px] font-semibold text-copper">{s.value}</div>
+                  <div className="text-[11.5px] text-muted mt-1 leading-snug">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -211,29 +149,23 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
               {scene.bullets.map((b, i) => (
                 <li
                   key={i}
-                  className="eqc-fade-up flex items-start gap-3 bg-panel border border-line rounded-2xl px-4 py-3"
-                  style={{ animationDelay: `${0.25 + i * 0.14}s` }}
+                  className="eqc-fade-up flex items-start gap-3 bg-panel border border-line rounded-2xl px-4 py-3.5"
+                  style={{ animationDelay: `${0.2 + i * 0.13}s` }}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-teal mt-2 shrink-0" />
-                  <span className="text-[14px] leading-snug">{b}</span>
+                  <span className="text-[14.5px] leading-relaxed">{b}</span>
                 </li>
               ))}
             </ul>
           )}
 
-          {scene.offers && (
-            <div className="mt-7 grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
-              {scene.offers.map((o, i) => (
-                <div
-                  key={i}
-                  className="eqc-fade-up bg-panel border border-line rounded-2xl px-4 py-4"
-                  style={{ animationDelay: `${0.25 + i * 0.14}s` }}
-                >
-                  <div className="font-display text-[15px] font-semibold text-ink">{o.name}</div>
-                  <div className="text-[12.5px] text-copper font-medium mt-0.5">{o.tagline}</div>
-                  <div className="text-[12px] text-muted mt-2 leading-snug">{o.audience}</div>
-                </div>
-              ))}
+          {scene.closing && (
+            <div className="eqc-fade-up mt-8" style={{ animationDelay: "0.25s" }}>
+              <div className="w-10 h-10 mx-auto rounded-full bg-teal flex items-center justify-center">
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                  <path d="M4 12.5L9.5 18L20 6" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
             </div>
           )}
         </div>

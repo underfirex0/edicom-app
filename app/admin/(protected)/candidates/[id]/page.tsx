@@ -131,7 +131,6 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
                 <InfoItem label="Permis de conduire" value={personalInfo.drivingLicense ? "Oui" : "Non"} />
                 <InfoItem label="Véhicule" value={personalInfo.vehicle ? "Oui" : "Non"} />
                 <InfoItem label="Disponibilité" value={AVAILABILITY_LABELS[personalInfo.availability] ?? personalInfo.availability} />
-                <InfoItem label="Salaire fixe souhaité" value={`${personalInfo.desiredSalary} MAD`} />
                 <InfoItem
                   label="Date d'embauche possible"
                   value={personalInfo.startDate ? new Date(personalInfo.startDate).toLocaleDateString("fr-FR") : ""}
@@ -144,10 +143,11 @@ export default async function CandidateDetailPage({ params }: { params: { id: st
             <>
               <SectionTitle>Parcours professionnel</SectionTitle>
               <Card className="p-5 mb-8">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-4 mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-4 mb-4">
                   <InfoItem label="Dernier poste" value={background.lastPosition} />
                   <InfoItem label="Entreprise" value={background.company} />
                   <InfoItem label="Durée" value={background.duration} />
+                  <InfoItem label="Salaire" value={background.lastSalary} />
                 </div>
                 <div className="space-y-3 border-t border-line pt-4">
                   <TextBlock label="Pourquoi il/elle a quitté cette entreprise" value={background.leavingReason} />

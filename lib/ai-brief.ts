@@ -43,7 +43,7 @@ function buildPrompt(candidate: CandidateRecord): string {
   const backgroundBlock =
     appInfo?.background && appInfo?.motivation
       ? `PARCOURS PROFESSIONNEL :
-Dernier poste : ${appInfo.background.lastPosition} chez ${appInfo.background.company} (${appInfo.background.duration})
+Dernier poste : ${appInfo.background.lastPosition} chez ${appInfo.background.company} (${appInfo.background.duration}, ${appInfo.background.lastSalary})
 Raison de départ : ${appInfo.background.leavingReason}
 Plus belle réussite commerciale : ${appInfo.background.bestSale}
 Plus gros échec commercial : ${appInfo.background.biggestFailure}

@@ -8,7 +8,6 @@ export interface PersonalInfo {
   drivingLicense: boolean | null;
   vehicle: boolean | null;
   availability: string;
-  desiredSalary: string;
   startDate: string;
 }
 
@@ -16,6 +15,7 @@ export interface ProfessionalBackground {
   lastPosition: string;
   company: string;
   duration: string;
+  lastSalary: string;
   leavingReason: string;
   bestSale: string;
   biggestFailure: string;

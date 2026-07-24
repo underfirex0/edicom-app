@@ -19,6 +19,7 @@ export default function BackgroundStep({
     data.lastPosition.trim() &&
     data.company.trim() &&
     data.duration.trim() &&
+    data.lastSalary.trim() &&
     data.leavingReason.trim() &&
     data.bestSale.trim() &&
     data.biggestFailure.trim() &&
@@ -34,17 +35,20 @@ export default function BackgroundStep({
       <h1 className="font-display text-[22px] font-semibold mb-6">Votre expérience</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <FormField label="Dernier poste occupé">
+        <FormField label="Type de votre dernier poste">
           <FormInput value={data.lastPosition} onChange={(e) => set("lastPosition", e.target.value)} required />
         </FormField>
-        <FormField label="Entreprise">
+        <FormField label="À quelle entreprise ?">
           <FormInput value={data.company} onChange={(e) => set("company", e.target.value)} required />
         </FormField>
-        <FormField label="Durée" span2>
+        <FormField label="Pendant combien de temps ?">
+          <FormInput value={data.duration} onChange={(e) => set("duration", e.target.value)} placeholder="ex. 2 ans" required />
+        </FormField>
+        <FormField label="À quel salaire ?">
           <FormInput
-            value={data.duration}
-            onChange={(e) => set("duration", e.target.value)}
-            placeholder="ex. 2 ans"
+            value={data.lastSalary}
+            onChange={(e) => set("lastSalary", e.target.value)}
+            placeholder="ex. 4 000 MAD"
             required
           />
         </FormField>

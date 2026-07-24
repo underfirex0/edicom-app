@@ -41,7 +41,6 @@ const EMPTY_PERSONAL = (name: string, email: string): PersonalInfo => ({
   drivingLicense: null,
   vehicle: null,
   availability: "",
-  desiredSalary: "",
   startDate: "",
 });
 
@@ -49,6 +48,7 @@ const EMPTY_BACKGROUND: ProfessionalBackground = {
   lastPosition: "",
   company: "",
   duration: "",
+  lastSalary: "",
   leavingReason: "",
   bestSale: "",
   biggestFailure: "",

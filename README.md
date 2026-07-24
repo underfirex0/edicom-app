@@ -269,7 +269,26 @@ que la présentation explique le **vrai produit** que les candidats vendront, pa
 l'argumentaire. Pour ajuster les offres ou les chiffres plus tard (prix, nouvelles formules),
 tout est dans `components/EdicomPresentation.tsx`.
 
-## 18. Développement local (optionnel)
+## 19. Nouveau : présentation simplifiée + ajustements du formulaire
+
+Suite au retour du DG, la présentation est passée à **4 écrans**, plus simples et directs
+(fini le jargon technique) :
+1. Bienvenue + chiffres clés (275 000+ entreprises, 36 ans d'expertise)
+2. Votre mission de commercial
+3. Proposer la bonne solution
+4. Message de clôture : "Ensemble, faisons de chaque rendez-vous une nouvelle opportunité de
+   croissance."
+
+Autres ajustements sur le formulaire :
+- Le champ **"Salaire fixe souhaité"** (informations personnelles) a été retiré.
+- Dans **Parcours professionnel**, les champs sont maintenant posés comme des questions
+  naturelles : *Type de votre dernier poste* / *À quelle entreprise ?* / *Pendant combien de
+  temps ?* / **À quel salaire ?** (nouveau champ, salaire du dernier poste).
+- La mise en situation orale est reformulée en une phrase unique et fluide.
+
+Aucun changement de base de données requis pour ces ajustements.
+
+## 20. Développement local (optionnel)
 
 ```bash
 npm install
