@@ -5,6 +5,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { scheduleInterviewAction, type FormState } from "./actions";
 import { RecoBadge, StatusPill } from "@/components/ui";
 import CopyTestLink from "@/components/CopyTestLink";
+import { localInputToISO } from "@/lib/datetime";
 import type { Recommendation } from "@/lib/types";
 
 function SubmitButton() {
@@ -36,6 +37,7 @@ export default function ScheduleRow({
   recommendation: Recommendation | null;
 }) {
   const [open, setOpen] = useState(false);
+  const [localDateTime, setLocalDateTime] = useState("");
   const [state, formAction] = useFormState<FormState, FormData>(scheduleInterviewAction, null);
 
   return (
@@ -66,12 +68,14 @@ export default function ScheduleRow({
       {open && !state?.success && (
         <form action={formAction} className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
           <input type="hidden" name="candidateId" value={candidateId} />
+          <input type="hidden" name="scheduledAt" value={localInputToISO(localDateTime)} />
           <div>
             <label className="block text-[12px] font-medium text-ink/70 mb-1">Date et heure</label>
             <input
               type="datetime-local"
-              name="scheduledAt"
               required
+              value={localDateTime}
+              onChange={(e) => setLocalDateTime(e.target.value)}
               className="focus-ring w-full rounded-xl border border-line bg-white px-3 py-2 text-[13.5px]"
             />
           </div>

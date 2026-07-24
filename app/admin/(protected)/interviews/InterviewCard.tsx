@@ -11,6 +11,7 @@ import {
 } from "./actions";
 import { RecoBadge } from "@/components/ui";
 import CopyTestLink from "@/components/CopyTestLink";
+import { localInputToISO } from "@/lib/datetime";
 import type { Recommendation } from "@/lib/types";
 
 function CompleteSubmit() {
@@ -114,7 +115,7 @@ export default function InterviewCard({
             disabled={!newDate || pending}
             onClick={() =>
               startTransition(async () => {
-                await rescheduleInterviewAction(interviewId, candidateId, newDate);
+                await rescheduleInterviewAction(interviewId, candidateId, localInputToISO(newDate));
                 setMode("idle");
               })
             }

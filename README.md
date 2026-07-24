@@ -288,7 +288,15 @@ Autres ajustements sur le formulaire :
 
 Aucun changement de base de données requis pour ces ajustements.
 
-## 20. Développement local (optionnel)
+## 21. Correctif : les heures d'entretien décalées d'1 heure
+
+Bug corrigé : les dates/heures d'entretien saisies (planification, report) étaient enregistrées
+avec un décalage d'une heure. En cause : le serveur (Vercel) tourne en UTC, alors que le
+navigateur de l'admin tourne à l'heure du Maroc — la conversion se faisait au mauvais endroit.
+Elle se fait maintenant systématiquement dans le navigateur avant l'envoi, donc l'heure affichée
+correspond exactement à l'heure saisie. Aucune action Supabase nécessaire, uniquement du code.
+
+## 22. Développement local (optionnel)
 
 ```bash
 npm install

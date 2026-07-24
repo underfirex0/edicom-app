@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { addAndScheduleAction, type FormState } from "./actions";
 import { Field, TextInput, Card } from "@/components/ui";
+import { localInputToISO } from "@/lib/datetime";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -21,6 +22,7 @@ function SubmitButton() {
 export default function AddCandidateForm() {
   const [phase, setPhase] = useState<"closed" | "form" | "done">("closed");
   const [copied, setCopied] = useState(false);
+  const [localDateTime, setLocalDateTime] = useState("");
   const [state, formAction] = useFormState<FormState, FormData>(addAndScheduleAction, null);
 
   useEffect(() => {
@@ -63,10 +65,12 @@ export default function AddCandidateForm() {
               « À planifier »)
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input type="hidden" name="scheduledAt" value={localInputToISO(localDateTime)} />
               <Field label="Date et heure">
                 <input
                   type="datetime-local"
-                  name="scheduledAt"
+                  value={localDateTime}
+                  onChange={(e) => setLocalDateTime(e.target.value)}
                   className="focus-ring w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13.5px]"
                 />
               </Field>
