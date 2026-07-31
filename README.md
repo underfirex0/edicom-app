@@ -314,7 +314,31 @@ Suite au retour du DG, deux changements :
 Aucun changement de base de données. Pour ajuster à nouveau le texte plus tard, tout est dans
 le tableau `SLIDES` en haut de `components/EdicomPresentation.tsx`.
 
-## 24. Développement local (optionnel)
+## 25. Restructuration complète : les 5 qualités commerciales du DG
+
+Le questionnaire comportemental et les mises en situation ont été entièrement reconstruits
+autour de la liste de qualités envoyée par le DG. Les 5 nouvelles compétences évaluées :
+
+1. **Orientation résultats** — être orienté résultat, se fixer des objectifs
+2. **Rigueur & suivi commercial** — proactivité, discipline, tout documenter, relance
+   méthodique, mesurer son taux de conversion
+3. **Persévérance & maîtrise de soi** — encaisser les refus fréquents sans se décourager
+4. **Écoute & compréhension client** — écouter vraiment, comprendre le besoin plutôt que
+   pousser un produit
+5. **Relation de confiance** — construire une relation fiable avec le prospect
+
+Les 15 affirmations comportementales et les 6 mises en situation ont toutes été réécrites pour
+coller précisément à ces 5 qualités (plus aucune trace des anciennes dimensions "aisance
+relationnelle" / "tolérance à la pression" génériques). Chaque mauvaise réponse aux mises en
+situation a maintenant une note d'analyse expliquant le signal faible qu'elle révèle, utilisée
+pour générer les questions d'entretien suggérées automatiquement.
+
+Aucun changement de base de données — uniquement le contenu des questions dans
+`lib/scoring.ts`. Les candidats déjà testés avec l'ancien questionnaire gardent leurs résultats
+historiques (juste avec les anciens noms de dimensions) ; seuls les nouveaux tests utiliseront
+la nouvelle structure.
+
+## 26. Développement local (optionnel)
 
 ```bash
 npm install
