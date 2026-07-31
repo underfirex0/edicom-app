@@ -296,7 +296,25 @@ navigateur de l'admin tourne à l'heure du Maroc — la conversion se faisait au
 Elle se fait maintenant systématiquement dans le navigateur avant l'envoi, donc l'heure affichée
 correspond exactement à l'heure saisie. Aucune action Supabase nécessaire, uniquement du code.
 
-## 22. Développement local (optionnel)
+## 23. Refonte : la présentation ressemble maintenant à un vrai diaporama
+
+Suite au retour du DG, deux changements :
+- **Visuel** : chaque écran est maintenant une vraie "diapositive" — un rectangle blanc au
+  format 16:9, avec logo en haut, numéro de diapositive en bas ("01 / 05"), sur un fond sombre
+  qui la fait ressortir comme dans PowerPoint/Keynote, plutôt qu'une interface d'application.
+- **Contenu** : les 5 diapositives reprennent maintenant **exactement** les deux textes rédigés
+  avec le DG (juste polis grammaticalement, sans reformulation) :
+  1. Présentation de Telecontact.ma (chiffres + signature)
+  2. Bien plus qu'un annuaire : un accélérateur de croissance (liste des solutions)
+  3. Bienvenue dans l'aventure Telecontact.ma
+  4. Votre mission de commercial
+  5. Proposer la bonne solution (clôture : "Ensemble, faisons de chaque rendez-vous une
+     nouvelle opportunité de croissance.")
+
+Aucun changement de base de données. Pour ajuster à nouveau le texte plus tard, tout est dans
+le tableau `SLIDES` en haut de `components/EdicomPresentation.tsx`.
+
+## 24. Développement local (optionnel)
 
 ```bash
 npm install
