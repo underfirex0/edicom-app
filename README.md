@@ -338,7 +338,27 @@ Aucun changement de base de données — uniquement le contenu des questions dan
 historiques (juste avec les anciens noms de dimensions) ; seuls les nouveaux tests utiliseront
 la nouvelle structure.
 
-## 26. Développement local (optionnel)
+## 27. Présentation dans l'app : alignée sur le PowerPoint final du DG
+
+La présentation affichée pendant le test (après les mises en situation) reprend maintenant
+**exactement** les 6 diapositives du fichier PowerPoint final validé par le DG — mêmes textes,
+même ordre. Elle a aussi été enrichie visuellement :
+
+- **Illustrations sur mesure** en SVG (réseau de points pour "275 000 entreprises", radar de
+  recherche animé pour "20 000 recherches/jour", chemin de visites terrain avec épingles qui
+  apparaissent une à une) — aucune image externe, donc toujours 0 dirham de coût.
+- **Transitions directionnelles** : le contenu glisse depuis la droite en avançant, depuis la
+  gauche en reculant — beaucoup plus fluide qu'un simple fondu.
+- **Mise en page distincte par diapositive** (deux colonnes avec illustration, grille de
+  solutions avec icônes, texte centré pour l'accueil, cartes pour les 3 offres) plutôt qu'un
+  seul gabarit répété.
+- Navigation manuelle inchangée (Précédent/Suivant, points cliquables, bouton "Suivant" qui
+  pulse après quelques secondes).
+
+Le contenu vit dans `components/EdicomPresentation.tsx` (tableau `SLIDES`) ; les illustrations
+sont dans `components/PresentationIcons.tsx`. Aucun changement de base de données.
+
+## 28. Développement local (optionnel)
 
 ```bash
 npm install
