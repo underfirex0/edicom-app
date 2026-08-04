@@ -241,10 +241,10 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
 
         {/* ---------- SOLUTIONS layout (slide 3) ---------- */}
         {slide.layout === "solutions" && (
-          <div className={"flex-1 flex flex-col " + animClass}>
+          <div className={"flex-1 flex flex-col justify-center " + animClass}>
             <div className="font-mono text-[11px] tracking-[0.1em] uppercase text-copper mb-2">{slide.eyebrow}</div>
             <h1 className="font-display font-semibold leading-[1.15] text-ink text-[20px] md:text-[27px]">{slide.title}</h1>
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               {slide.solutions?.map((s, i) => (
                 <div
                   key={i}
@@ -259,7 +259,7 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
               ))}
             </div>
             {slide.closing && (
-              <p className="font-display italic font-semibold text-teal text-[14px] md:text-[17px] mt-auto pt-4">
+              <p className="font-display italic font-semibold text-teal text-[14px] md:text-[17px] mt-8">
                 {slide.closing}
               </p>
             )}
@@ -310,11 +310,11 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
 
         {/* ---------- CLOSING layout (slide 6) ---------- */}
         {slide.layout === "closing" && (
-          <div className={"flex-1 flex flex-col " + animClass}>
+          <div className={"flex-1 flex flex-col justify-center " + animClass}>
             <div className="font-mono text-[11px] tracking-[0.1em] uppercase text-copper mb-2">{slide.eyebrow}</div>
             <h1 className="font-display font-semibold leading-[1.15] text-white text-[22px] md:text-[29px]">{slide.title}</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
               {slide.tiers?.map((t, i) => {
                 const Icon = TIER_ICONS[t.icon];
                 return (
@@ -332,7 +332,7 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
               })}
             </div>
 
-            <div className="mt-4 space-y-2">
+            <div className="mt-5 space-y-2">
               {slide.bullets?.map((b, i) => (
                 <p key={i} className="text-white/65 text-[12.5px] md:text-[14px] leading-relaxed">
                   {b}
@@ -341,7 +341,7 @@ export default function EdicomPresentation({ onFinish }: { onFinish: () => void 
             </div>
 
             {slide.closing && (
-              <p className="font-display font-semibold italic text-white text-[16px] md:text-[20px] leading-snug mt-auto pt-4 border-l-2 border-teal pl-4">
+              <p className="font-display font-semibold italic text-white text-[16px] md:text-[20px] leading-snug mt-8 border-l-2 border-teal pl-4">
                 {slide.closing}
               </p>
             )}
